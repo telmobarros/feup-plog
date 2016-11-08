@@ -211,4 +211,3 @@ dropBaby(X,Y).
 
 %acaba o jogo?
 gameEnd(Rainha1, Rainha2).
-
