@@ -1,8 +1,9 @@
 :-include('board.pl').
 
-queen_monkey:- 
-        readGameMode(Mode),
-        %readComputerDifficulty(Mode,Difficulty),
+monkey_queen:- 
+        repeat,
+                once(readGameMode(Mode)),
+        readComputerDifficulty(Mode,Difficulty),
         initializeGame(Mode, Board, Player1Type, Player2Type, CurPlayer, CurPlayerType),
         play_game(Board, Player1Type, Player2Type, CurPlayer, CurPlayerType, Difficulty).
         
@@ -10,13 +11,15 @@ queen_monkey:-
 
 play_game(Board, Player1Type, Player2Type, CurPlayer, CurPlayerType, Difficulty) :-
         display_board(Board),
-        write(CurPlayer),write(CurPlayerType), %%debug only
-        play_turn(Board, CurPlayer, CurPlayerType, Difficulty),     
-        switchPlayer(1, Player1Type, Player2Type, CurPlayer, CurPlayerType),
-        write(CurPlayer),write(CurPlayerType), %%debug only
-        play_game(Board, Player1Type, Player2Type, CurPlayer, CurPlayerType, Difficulty).
+        %write('Player '), write(CurPlayer), write('  Player Type : '), write(CurPlayerType), nl, %%debug only
+        play_turn(Board, NewBoard, CurPlayer, CurPlayerType, Difficulty),
+        switchPlayer(CurPlayer, NewPlayer, NewPlayerType, Player1Type, Player2Type),
+        play_game(Board, Player1Type, Player2Type, NewPlayer, NewPlayerType, Difficulty).
 
-play_turn(Board, CurPlayer, 0, Difficulty) :-
-        readMove(Xinitial, Yinitial, Xfinal, Yfinal).
+play_turn(Board, NewBoard, CurPlayer, 0, Difficulty) :-
+        repeat,
+        readMove(Xinitial, Yinitial, Xfinal, Yfinal),
+        legal_move(CurPlayer, Board, Xinitial, Yinitial, Xfinal, Yfinal).
 
-play_turn(Board, CurPlayer, 1, Difficulty).
+
+play_turn(Board, NewBoard, CurPlayer, 1, Difficulty).

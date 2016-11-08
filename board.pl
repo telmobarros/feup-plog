@@ -122,8 +122,9 @@ readGameMode(Mode) :-
         Mode >= 1, Mode =< 3.
          
 
-readComputerDifficulty(1, Difficulty) :- Difficulty is 0.
+readComputerDifficulty(1, Difficulty).
 readComputerDifficulty(Mode, Difficulty) :-
+        Mode > 1,
         write('Computer Difficulty'), nl,
         write('1 -> Easy'), nl,
         write('2 -> Hard'), nl,
@@ -151,13 +152,13 @@ intializePlayerTypes(3, Player1Type, Player2Type) :-
         Player2Type is 1.
 
 
-switchPlayer(1, Player1Type, Player2Type, CurPlayer, CurPlayerType) :-
-        CurPlayer is 2,
-        CurPlayerType is Player2Type.
+switchPlayer(1, NewPlayer, NewPlayerType, Player1Type, Player2Type) :-
+        NewPlayer is 2,
+        NewPlayerType is Player2Type.
 
-switchPlayer(2, Player1Type, Player2Type, CurPlayer, CurPlayerType) :-
-        CurPlayer is 1,
-        CurPlayerType is Player1Type.
+switchPlayer(2, NewPlayer, NewPlayerType, Player1Type, Player2Type) :-
+        NewPlayer is 1,
+        NewPlayerType is Player1Type.
         
 
 
@@ -175,13 +176,32 @@ readMove(Xinitial, Yinitial, Xfinal, Yfinal) :-
 
         
 %verficar se a posicao é valida (se se encontra dentro do tabuleiro)
-legal_pos(X,Y).
+legal_pos(X,Y):-
+        X >= 1, X =< 12,
+        Y >= 1, Y =< 12.
+
+getBoardPos([L1|Ls], X,Y,Piece).%:-
+        
+        %display_lines([L1|Ls], 1).
 
 %verifica se os parametros introduzidos como posicoes finais nao saem do tabuleiro
 %se a linha e a coluna finais forem diferentes das posicoes iniciais chama a funcao move_diagonal
 %se a linha final for igual a inicial chama a funcao move_horizontal
 %se a coluna final for igual a inicial chama a funcao move_vertical
-legal_move(Xinitial, Yinitial, Xfinal,Yfinal).
+legal_move(1, Board, Xinitial, Yinitial, Xfinal,Yfinal):-
+        legal_pos(Xinitial,Yinitial), legal_pos(Xfinal,Yfinal),
+        getBoardPos(Board, Xinitial, Yinitial, PieceInitial),
+        PieceInitial > 0,
+        getBoardPos(Board, Xfinal, Yfinal, PieceFinal),
+        PieceFinal =< 0.
+
+legal_move(2, Board, Xinitial, Yinitial, Xfinal,Yfinal):-
+        legal_pos(Xinitial,Yinitial), legal_pos(Xfinal,Yfinal),
+        getBoardPos(Board, Xinitial, Yinitial, PieceInitial),
+        PieceInitial < 0,
+        getBoardPos(Board, Xfinal, Yfinal, PieceFinal),
+        PieceFinal >= 0.
+        
 
 %verifica se a rainha se movimenta para uma posicao onde se encontra um baby ou rainha da equipa adversaria
 legal_queen_move(Xinitial,Yinitial,Xfinal,Yfinal).
@@ -196,10 +216,10 @@ horizontal_move(Xinitial, Yinitial, Xfinal,Yfinal).
 vertical_move(Xinitial, Yinitial, Xfinal,Yfinal).
 
 %pesquisa posicao rainha
-queen_pos(Jog,Board).
+queen_pos(Jog,Board, X, Y). %IMPORTANTE
 
 %verifica se a peca ao movimentar-se se se aproxima da rainha
-queen_aprox(Xqueen, Yqueen, Xinitial, Yinitial, Xfinal, Yfinal).
+queen_aprox(Xqueen, Yqueen, Xinitial, Yinitial, Xfinal, Yfinal). %IMPORTANTE
 
 %verifica se existe um baby da equipa adversaria na posicao final
 %se sim come esse baby e nao deixa um baby na posicao inicial
@@ -207,7 +227,7 @@ queen_aprox(Xqueen, Yqueen, Xinitial, Yinitial, Xfinal, Yfinal).
 eat(Xinitial,Yinitial,Xfinal,Yfinal).
 
 %deixa um baby na posição inicial da rainha após esta se movimentar
-dropBaby(X,Y).
+dropBaby(X,Y). %IMPORTANTE
 
 %acaba o jogo?
-gameEnd(Rainha1, Rainha2).
+gameEnd(Rainha1, Rainha2). %IMPORTANTE
