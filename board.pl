@@ -232,7 +232,7 @@ legal_move(1, Board, Xinitial, Yinitial, Xfinal,Yfinal, PieceInitial, PieceFinal
 move(Player, Board, Xinitial, Yinitial, Xfinal,Yfinal, PieceInitial, PieceFinal):-
 	Player == 1,
 	PieceInitial >=2,
-	PieceFinal != 0,
+	PieceFinal > 0,
 	setBoardPos(Board, Xfinal, Yfinal, PieceInitial),
 	setBoardPos(Board, Xinitial, Yinitial, 0).
 
@@ -241,12 +241,12 @@ move(Player, Board, Xinitial, Yinitial, Xfinal,Yfinal, PieceInitial, PieceFinal)
 	PieceInitial >=2,
 	PieceFinal == 0,
 	setBoardPos(Board, Xfinal, Yfinal, PieceInitial),
-	dropBaby(Board, Xinitial, Yinitial).
+	dropBaby(Board, Xinitial, Yinitial, Player).
 
 move(Player, Board, Xinitial, Yinitial, Xfinal,Yfinal, PieceInitial, PieceFinal):-
 	Player == 1,
 	PieceInitial == 1,
-	PieceFinal != 0,
+	PieceFinal < 0,
 	setBoardPos(Board, Xfinal, Yfinal, PieceInitial),
 	setBoardPos(Board, Xinitial, Yinitial, 0).
 
@@ -291,7 +291,7 @@ queen_aprox(Board, Player, Xinitial, Yinitial, Xfinal, Yfinal). %IMPORTANTE
 eat(Xinitial,Yinitial,Xfinal,Yfinal).
 
 %deixa um baby na posição inicial da rainha após esta se movimentar
-dropBaby(X,Y). %IMPORTANTE
+dropBaby(Board,X,Y,Player). %IMPORTANTE
 
 %acaba o jogo?
 gameEnd(Rainha1, Rainha2). %IMPORTANTE
