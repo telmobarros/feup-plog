@@ -179,6 +179,8 @@ readMove(Xinitial, Yinitial, Xfinal, Yfinal) :-
 legal_pos(X,Y):-
         X >= 1, X =< 12,
         Y >= 1, Y =< 12.
+		
+legal_orientation(Xinitial,Yinitial, Xfinal,Yfinal).
 
 
 
@@ -222,7 +224,7 @@ setBoardPos([L1|Ls], X, Y, PiecePlayer). %FALTA IMPLEMENTAR
 %se a linha final for igual a inicial chama a funcao move_horizontal
 %se a coluna final for igual a inicial chama a funcao move_vertical
 legal_move(1, Board, Xinitial, Yinitial, Xfinal,Yfinal, PieceInitial, PieceFinal):-
-        legal_pos(Xinitial,Yinitial), legal_pos(Xfinal,Yfinal),
+        legal_pos(Xinitial,Yinitial), legal_pos(Xfinal,Yfinal), legal_orientation(Xinitial,Yinitial, Xfinal,Yfinal),
         write('vou fazer o getBoardPos'),nl,
         getBoardPos(Board, Xinitial, Yinitial, 1, PieceInitial),
          write(PieceInitial),nl,PieceInitial > 0,
