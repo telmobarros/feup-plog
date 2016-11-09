@@ -212,6 +212,8 @@ getBoardPos([L1|Ls], X, Xprox,PiecePlayer):-
         Xprox == X,
         PiecePlayer is L1.
 
+setBoardPos([L1|Ls], X, Y, PiecePlayer). %FALTA IMPLEMENTAR
+
 
 
 
@@ -219,13 +221,42 @@ getBoardPos([L1|Ls], X, Xprox,PiecePlayer):-
 %se a linha e a coluna finais forem diferentes das posicoes iniciais chama a funcao move_diagonal
 %se a linha final for igual a inicial chama a funcao move_horizontal
 %se a coluna final for igual a inicial chama a funcao move_vertical
-legal_move(1, Board, Xinitial, Yinitial, Xfinal,Yfinal):-
+legal_move(1, Board, Xinitial, Yinitial, Xfinal,Yfinal, PieceInitial, PieceFinal):-
         legal_pos(Xinitial,Yinitial), legal_pos(Xfinal,Yfinal),
         write('vou fazer o getBoardPos'),nl,
         getBoardPos(Board, Xinitial, Yinitial, 1, PieceInitial),
          write(PieceInitial),nl,PieceInitial > 0,
         getBoardPos(Board, Xfinal, Yfinal, 1, PieceFinal),
          write(PieceFinal),nl,PieceFinal =< 0.
+	
+move(Player, Board, Xinitial, Yinitial, Xfinal,Yfinal, PieceInitial, PieceFinal):-
+	Player == 1,
+	PieceInitial >=2,
+	PieceFinal != 0,
+	setBoardPos(Board, Xfinal, Yfinal, PieceInitial),
+	setBoardPos(Board, Xinitial, Yinitial, 0).
+
+move(Player, Board, Xinitial, Yinitial, Xfinal,Yfinal, PieceInitial, PieceFinal):-
+	Player == 1,	
+	PieceInitial >=2,
+	PieceFinal == 0,
+	setBoardPos(Board, Xfinal, Yfinal, PieceInitial),
+	dropBaby(Board, Xinitial, Yinitial).
+
+move(Player, Board, Xinitial, Yinitial, Xfinal,Yfinal, PieceInitial, PieceFinal):-
+	Player == 1,
+	PieceInitial == 1,
+	PieceFinal != 0,
+	setBoardPos(Board, Xfinal, Yfinal, PieceInitial),
+	setBoardPos(Board, Xinitial, Yinitial, 0).
+
+move(Player, Board, Xinitial, Yinitial, Xfinal,Yfinal, PieceInitial, PieceFinal):-
+	Player == 1,
+	PieceInitial == 1,
+	PieceFinal == 0,
+	queen_aprox(Board, Player, Xfinal, Yfinal, Xinitial, Yinitial),
+	setBoardPos(Board, Xfinal, Yfinal, PieceInitial),
+	setBoardPos(Board, Xinitial, Yinitial, 0).
 
 legal_move(2, Board, Xinitial, Yinitial, Xfinal,Yfinal):-
         legal_pos(Xinitial,Yinitial), legal_pos(Xfinal,Yfinal),
@@ -252,7 +283,7 @@ vertical_move(Xinitial, Yinitial, Xfinal,Yfinal).
 queen_pos(Jog,Board, X, Y). %IMPORTANTE
 
 %verifica se a peca ao movimentar-se se se aproxima da rainha
-queen_aprox(Xqueen, Yqueen, Xinitial, Yinitial, Xfinal, Yfinal). %IMPORTANTE
+queen_aprox(Board, Player, Xinitial, Yinitial, Xfinal, Yfinal). %IMPORTANTE
 
 %verifica se existe um baby da equipa adversaria na posicao final
 %se sim come esse baby e nao deixa um baby na posicao inicial

@@ -19,7 +19,8 @@ play_game(Board, Player1Type, Player2Type, CurPlayer, CurPlayerType, Difficulty)
 play_turn(Board, NewBoard, CurPlayer, 0, Difficulty) :-
         repeat,
         readMove(Xinitial, Yinitial, Xfinal, Yfinal),
-        legal_move(CurPlayer, Board, Xinitial, Yinitial, Xfinal, Yfinal).
+        legal_move(CurPlayer, Board, Xinitial, Yinitial, Xfinal, Yfinal, PieceInitial, PieceFinal),
+		move(CurPlayer, Board, Xinitial, Yinitial, Xfinal, Yfinal, PieceInitial, PieceFinal).
 
 
 play_turn(Board, NewBoard, CurPlayer, 1, Difficulty).
