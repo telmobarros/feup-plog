@@ -173,113 +173,142 @@ readMove(Xinitial, Yinitial, Xfinal, Yfinal) :-
         write('X->'), read(Xfinal),
         write('Y->'), read(Yfinal), nl.
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%Retorna a peça que se encontra na posicao X, Y de um tabuleiro
+getBoardPos([L1|Ls],X, Y, PiecePlayer):- getBoardPos([L1|Ls],X, Y, 1, PiecePlayer).
+
+getBoardPos([L1|Ls],X, Y, Yprox,PiecePlayer):-
+        Yprox < Y,
+        Var is Yprox + 1,
+        getBoardPos(Ls, X, Y, Var, PiecePlayer).
+
+getBoardPos([L1|Ls], X, Y, Y,PiecePlayer):- getBoardLinePos(L1, X, 1,PiecePlayer).
 
 
-%verficar se a posicao é valida (se se encontra dentro do tabuleiro)
+%Retorna a peça que se encontra na posicao X de uma linha
+getBoardLinePos([L1|Ls], X,PiecePlayer):- getBoardLinePos([L1|Ls], X, 1,PiecePlayer).
+
+getBoardLinePos([L1|Ls], X, Xprox,PiecePlayer):-
+        Xprox < X,
+        Var is Xprox + 1,
+        getBoardLinePos(Ls, X, Var,PiecePlayer).%funcao de pesquisa da peca na linha
+
+getBoardLinePos([L1|Ls], X, X,PiecePlayer):- PiecePlayer is L1.
+
+
+%Coloca a peça PiecePlayer na posição X,Y do tabuleiro
+setBoardPos([L1|Ls],X, Y, PiecePlayer,[L1|NewLs]):- setBoardPos([L1|Ls],X, Y, 1,PiecePlayer,[L1|NewLs]).
+
+setBoardPos([L1|Ls],X, Y, Yprox,PiecePlayer,[L1|NewLs]):-
+        Yprox < Y,
+        Var is Yprox + 1,
+        setBoardPos(Ls, X, Y, Var, PiecePlayer, NewLs).
+
+setBoardPos([L1|Ls], X, Y, Y,PiecePlayer ,[NewL1|Ls]):-
+        setBoardLinePos(L1, X, PiecePlayer , NewL1).
+
+
+%Coloca a peça PiecePlayer na posição X de uma linha
+setBoardLinePos([L1|Ls], X, PiecePlayer, [L1|NewLs]):- setBoardLinePos([L1|Ls], X, 1, PiecePlayer, [L1|NewLs]).
+
+setBoardLinePos([L1|Ls], X, Xprox,PiecePlayer, [L1|NewLs]):-
+        Xprox < X,
+        Var is Xprox + 1,
+        setBoardLinePos(Ls, X, Var,PiecePlayer, NewLs).
+
+setBoardLinePos([L1|Ls], X, X,PiecePlayer, [PiecePlayer|Ls]).
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%verfica se a posicao se se encontra dentro do tabuleiro
 legal_pos(X,Y):-
         X >= 1, X =< 12,
         Y >= 1, Y =< 12.
-		
+                
+%verifica se o movimento tem uma direção válida (horizontal, vertical ou diagonal)
 legal_orientation(Xinitial,Yinitial, Xfinal,Yfinal).
 
-
-
-%ver coluna onde se encontra a peca
-getBoardPos([L1|Ls],X, Y, Yprox,PiecePlayer):-
-        write('getBoardPos'),nl,write('Yprox '),write(Yprox),nl, write('Y '), write(Y),nl,
-        Yprox < Y,
-        write('hmmm'),nl, %funcao de pesquisa da peca na linha
-        Var is Yprox + 1,
-        write('continuar'),
-        getBoardPos(Ls, X, Y, Var, PiecePlayer).
-
-
-getBoardPos([L1|Ls], X,Y, Yprox,PiecePlayer):-
-        write('getBoardPos'),nl,write('Yprox '),write(Yprox),nl, write('Y '), write(Y),nl,
-        Yprox == Y,
-        write('vai fazer linha'),nl,
-        getBoardPos(L1, X, 1,PiecePlayer).
-
-
-        %ver linha onde se encontra a peca
-        getBoardPos([L1|Ls], X, Xprox,PiecePlayer):-
-                write('getBoardPos da linha'),nl,
-                Xprox < X,
-                Var is Xprox + 1,write('proxima coluna'),nl,
-                getBoardPos(Ls, X, Var,PiecePlayer).%funcao de pesquisa da peca na linha
-
-
-getBoardPos([L1|Ls], X, Xprox,PiecePlayer):-
-        write('getBoardPos da linha'),nl,
-        Xprox == X,
-        PiecePlayer is L1.
-
-setBoardPos([L1|Ls], X, Y, PiecePlayer). %FALTA IMPLEMENTAR
-
-
-
-
-%verifica se os parametros introduzidos como posicoes finais nao saem do tabuleiro
-%se a linha e a coluna finais forem diferentes das posicoes iniciais chama a funcao move_diagonal
-%se a linha final for igual a inicial chama a funcao move_horizontal
-%se a coluna final for igual a inicial chama a funcao move_vertical
+%verifica se os parametros introduzidos como posicoes iniciais e finais nao saem do tabuleiro
+%verifica se a posicao inicial corresponde a uma peça do jogador
+%verifica se a posicao final corresponde a uma peça do adversário ou uma casa vazia
+%verifica se o movimento tem uma direção válida (horizontal, vertical ou diagonal)
+%verifica se as casas entre a posicao inicial e a posicao final estao livres
+%legal_move(+Player, +Board, +Xinitial, +Yinitial, +Xfinal, -PieceInitial, -PieceFinal)
 legal_move(1, Board, Xinitial, Yinitial, Xfinal,Yfinal, PieceInitial, PieceFinal):-
         legal_pos(Xinitial,Yinitial), legal_pos(Xfinal,Yfinal), legal_orientation(Xinitial,Yinitial, Xfinal,Yfinal),
-        write('vou fazer o getBoardPos'),nl,
-        getBoardPos(Board, Xinitial, Yinitial, 1, PieceInitial),
-         write(PieceInitial),nl,PieceInitial > 0,
-        getBoardPos(Board, Xfinal, Yfinal, 1, PieceFinal),
-         write(PieceFinal),nl,PieceFinal =< 0.
-	
-move(Player, Board, Xinitial, Yinitial, Xfinal,Yfinal, PieceInitial, PieceFinal):-
-	Player == 1,
-	PieceInitial >=2,
-	PieceFinal > 0,
-	setBoardPos(Board, Xfinal, Yfinal, PieceInitial),
-	setBoardPos(Board, Xinitial, Yinitial, 0).
+        getBoardPos(Board, Xinitial, Yinitial, PieceInitial),
+        PieceInitial > 0,
+        getBoardPos(Board, Xfinal, Yfinal, PieceFinal),
+        PieceFinal =< 0.
 
-move(Player, Board, Xinitial, Yinitial, Xfinal,Yfinal, PieceInitial, PieceFinal):-
-	Player == 1,	
-	PieceInitial >=2,
-	PieceFinal == 0,
-	setBoardPos(Board, Xfinal, Yfinal, PieceInitial),
-	dropBaby(Board, Xinitial, Yinitial, Player).
+legal_move(2, Board, Xinitial, Yinitial, Xfinal,Yfinal, PieceInitial, PieceFinal):-
+        legal_pos(Xinitial,Yinitial), legal_pos(Xfinal,Yfinal), legal_orientation(Xinitial,Yinitial, Xfinal,Yfinal),
+        getBoardPos(Board, Xinitial, Yinitial, PieceInitial),
+        PieceInitial < 0,
+        getBoardPos(Board, Xfinal, Yfinal, PieceFinal),
+        PieceFinal >= 0.
 
-move(Player, Board, Xinitial, Yinitial, Xfinal,Yfinal, PieceInitial, PieceFinal):-
-	Player == 1,
-	PieceInitial == 1,
+%move a peça da posição inicial para a final
+%move(+Player, +Board, +Xinitial, +Yinitial, +Xfinal, +Yfinal, +PieceInitial, +PieceFinal, -NewBoard)
+move(1, Board, Xinitial, Yinitial, Xfinal, Yfinal, PieceInitial, PieceFinal, NewBoard):-
+	PieceInitial >=2,
 	PieceFinal < 0,
-	setBoardPos(Board, Xfinal, Yfinal, PieceInitial),
-	setBoardPos(Board, Xinitial, Yinitial, 0).
+	setBoardPos(Board, Xfinal, Yfinal,PieceInitial, Board1),
+	setBoardPos(Board1, Xinitial, Yinitial, 0, NewBoard).
 
-move(Player, Board, Xinitial, Yinitial, Xfinal,Yfinal, PieceInitial, PieceFinal):-
-	Player == 1,
-	PieceInitial == 1,
-	PieceFinal == 0,
-	queen_aprox(Board, Player, Xfinal, Yfinal, Xinitial, Yinitial),
-	setBoardPos(Board, Xfinal, Yfinal, PieceInitial),
-	setBoardPos(Board, Xinitial, Yinitial, 0).
+move(1, Board, Xinitial, Yinitial, Xfinal, Yfinal, PieceInitial, 0, NewBoard):-
+	PieceInitial > 2,
+        NewPieceInitial is PieceInitial - 1,
+	setBoardPos(Board, Xfinal, Yfinal, NewPieceInitial, Board1),
+	setBoardPos(Board1, Xinitial, Yinitial, 1, NewBoard).
 
-legal_move(2, Board, Xinitial, Yinitial, Xfinal,Yfinal):-
-        legal_pos(Xinitial,Yinitial), legal_pos(Xfinal,Yfinal),
-        write('vou fazer o getBoardPos'),nl,
-        getBoardPos(Board, Xinitial, Yinitial, 1, PieceInitial),
-         write(PieceInitial),nl,PieceInitial < 0,
-        getBoardPos(Board, Xfinal, Yfinal, 1, PieceFinal),
-         write(PieceFinal),nl,PieceFinal >= 0.
+move(1, Board, Xinitial, Yinitial, Xfinal, Yfinal, 1, PieceFinal,NewBoard):-
+	PieceFinal < 0,
+	setBoardPos(Board, Xfinal, Yfinal, 1, Board1),
+	setBoardPos(Board1, Xinitial, Yinitial, 0, NewBoard).
+
+move(1, Board, Xinitial, Yinitial, Xfinal, Yfinal, 1, 0, NewBoard):-
+	queen_aprox(Board, 1, Xfinal, Yfinal, Xinitial, Yinitial),
+	setBoardPos(Board, Xfinal, Yfinal, 1, Board1),
+	setBoardPos(Board1, Xinitial, Yinitial, 0, NewBoard).
+
+
+move(2, Board, Xinitial, Yinitial, Xfinal, Yfinal, PieceInitial, PieceFinal, NewBoard):-
+        PieceInitial =< -2,
+        PieceFinal > 0,
+        setBoardPos(Board, Xfinal, Yfinal, 1,PieceInitial, Board1),
+        setBoardPos(Board1, Xinitial, Yinitial, 1, 0, NewBoard).
+
+move(2, Board, Xinitial, Yinitial, Xfinal, Yfinal, PieceInitial, 0, NewBoard):-
+        PieceInitial < -2,
+        NewPieceInitial is PieceInitial + 1,
+        setBoardPos(Board, Xfinal, Yfinal, 1, NewPieceInitial, Board1),
+        setBoardPos(Board1, Xinitial, Yinitial, 1, 1, NewBoard).
+
+move(2, Board, Xinitial, Yinitial, Xfinal, Yfinal, -1, PieceFinal,NewBoard):-
+        PieceFinal > 0,
+        setBoardPos(Board, Xfinal, Yfinal, -1, Board1),
+        setBoardPos(Board1, Xinitial, Yinitial, 0, NewBoard).
+
+move(2, Board, Xinitial, Yinitial, Xfinal, Yfinal, -1, 0, NewBoard):-
+        queen_aprox(Board, 2, Xfinal, Yfinal, Xinitial, Yinitial),
+        setBoardPos(Board, Xfinal, Yfinal, -1, Board1),
+        setBoardPos(Board1, Xinitial, Yinitial, 0, NewBoard).
 
 
 %verifica se a rainha se movimenta para uma posicao onde se encontra um baby ou rainha da equipa adversaria
-legal_queen_move(Xinitial,Yinitial,Xfinal,Yfinal).
+%legal_queen_move(Xinitial,Yinitial,Xfinal,Yfinal).
 
 %verfifca se as posicoes final sao posicoes validas em relacao a posicao inicial e guarda a nova posicao ou whatever
-diagonal_move(Xinitial, Yinitial, Xfinal,Yfinal).
+%diagonal_move(Xinitial, Yinitial, Xfinal,Yfinal).
 
 %guarda as novas posicoes apos fazer o movimento horizontal da peca
-horizontal_move(Xinitial, Yinitial, Xfinal,Yfinal).
+%horizontal_move(Xinitial, Yinitial, Xfinal,Yfinal).
 
 %guarda as novas posicoes apos fazer o movimento vertical da peca
-vertical_move(Xinitial, Yinitial, Xfinal,Yfinal).
+%vertical_move(Xinitial, Yinitial, Xfinal,Yfinal).
 
 %pesquisa posicao rainha
 queen_pos(Jog,Board, X, Y). %IMPORTANTE
@@ -290,7 +319,7 @@ queen_aprox(Board, Player, Xinitial, Yinitial, Xfinal, Yfinal). %IMPORTANTE
 %verifica se existe um baby da equipa adversaria na posicao final
 %se sim come esse baby e nao deixa um baby na posicao inicial
 %se nao existir nenhuma peca na posicao final deixa um baby na posicao inicial ao deslocar se
-eat(Xinitial,Yinitial,Xfinal,Yfinal).
+%eat(Xinitial,Yinitial,Xfinal,Yfinal).
 
 %deixa um baby na posição inicial da rainha após esta se movimentar
 dropBaby(Board,X,Y,Player). %IMPORTANTE
