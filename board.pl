@@ -1,17 +1,17 @@
 board_initialized(Board):-
-     Board=[[0,0,0,0,0,-20,0,0,0,0,0,0],          %estado inicial
-           [0,0,0,0,0,0,0,0,0,0,0,0],
-           [0,0,0,0,0,0,0,0,0,0,0,0],
-           [0,0,0,0,0,0,0,0,0,0,0,0],
-           [0,0,0,0,0,0,0,0,0,0,0,0],
-           [0,0,0,0,0,0,0,0,0,0,0,0],
-           [0,0,0,0,0,0,0,0,0,0,0,0],
-           [0,0,0,0,0,0,0,0,0,0,0,0],
-           [0,0,0,0,0,0,0,0,0,0,0,0],
-           [0,0,0,0,0,0,0,0,0,0,0,0],
-           [0,0,0,0,0,0,0,0,0,0,0,0],
-           [0,0,0,0,0,0,20,0,0,0,0,0]].
-           
+        Board=[[0,0,0,0,0,-20,0,0,0,0,0,0],          %estado inicial
+               [0,0,0,0,0,0,0,0,0,0,0,0],
+               [0,0,0,0,0,0,0,0,0,0,0,0],
+               [0,0,0,0,0,0,0,0,0,0,0,0],
+               [0,0,0,0,0,0,0,0,0,0,0,0],
+               [0,0,0,0,0,0,0,0,0,0,0,0],
+               [0,0,0,0,0,0,0,0,0,0,0,0],
+               [0,0,0,0,0,0,0,0,0,0,0,0],
+               [0,0,0,0,0,0,0,0,0,0,0,0],
+               [0,0,0,0,0,0,0,0,0,0,0,0],
+               [0,0,0,0,0,0,0,0,0,0,0,0],
+               [0,0,0,0,0,0,20,0,0,0,0,0]].
+
 /**board_initialized(Board):-
      Board=[[0,0,0,-1,0,0,0,0,0,-1,0,-1],            %estado intermédio
            [0,-1,0,-1,-1,0,0,0,-1,0,0,-6],
@@ -25,7 +25,7 @@ board_initialized(Board):-
            [0,0,1,0,-1,0,0,0,0,0,1,0],
            [9,0,0,0,0,0,0,0,0,0,0,1],
            [0,1,0,0,0,0,-1,0,0,0,0,0]].*/
-           
+
 /**board_initialized(Board):-
      Board=[[0,0,0,0,0,0,0,0,0,0,0,0],           %estado final
            [0,0,0,0,0,0,0,0,0,0,0,0],
@@ -41,12 +41,12 @@ board_initialized(Board):-
            [0,0,0,0,0,0,0,0,0,0,0,0]].*/
 
 
-           
+
 display_board([L1|Ls]):-
         write('  A    B    C    D    E    F    G    H    I    J    K    L'), nl,        %imprime cabeçalho com letras das colunas
         write('-------------------------------------------------------------'), nl,     %imprime separador das linhas
         display_lines([L1|Ls], 1).
-           
+
 display_lines([L1|Ls], Nlines):- 
         display_line(L1), write('| '), write(Nlines), nl,
         write('-------------------------------------------------------------'), nl,     %imprime separador das linhas
@@ -60,15 +60,15 @@ display_line([E|Es]):-
         translate(E,T),                                                                 %converte o número na representação da peça
 	write(T),                                                                       %imprime a representação da peça
         display_line(Es).
-        
+
 display_line([]).
 
 /**writeabs(X) :- X < 0 ->
-                Y is -X,
-                write(' '),write(Y), write('P ');   %peça preta
-                        X > 0 ->
-                        write(' '),write(X), write('B ');           %peça branca
-                        write('    ').   %espaço vazio*/
+               Y is -X,
+               write(' '),write(Y), write('P ');   %peça preta
+               X > 0 ->
+               write(' '),write(X), write('B ');           %peça branca
+               write('    ').   %espaço vazio*/
 
 translate(0,'    ').
 translate(-20,' 20P').
@@ -120,7 +120,7 @@ readGameMode(Mode) :-
         write('3 -> Computer vs Computer'), nl,
         write('Mode: '), read(Mode),
         Mode >= 1, Mode =< 3.
-         
+
 
 readComputerDifficulty(1, Difficulty).
 readComputerDifficulty(Mode, Difficulty) :-
@@ -159,7 +159,7 @@ switchPlayer(1, NewPlayer, NewPlayerType, Player1Type, Player2Type) :-
 switchPlayer(2, NewPlayer, NewPlayerType, Player1Type, Player2Type) :-
         NewPlayer is 1,
         NewPlayerType is Player1Type.
-        
+
 
 
 %Pedir ao utilizar a jogada a realizar, ou seja, posicao inicial da pec e posicao final
@@ -174,15 +174,46 @@ readMove(Xinitial, Yinitial, Xfinal, Yfinal) :-
         write('Y->'), read(Yfinal), nl.
 
 
-        
+
 %verficar se a posicao é valida (se se encontra dentro do tabuleiro)
 legal_pos(X,Y):-
         X >= 1, X =< 12,
         Y >= 1, Y =< 12.
 
-getBoardPos([L1|Ls], X,Y,Piece).%:-
-        
-        %display_lines([L1|Ls], 1).
+
+
+%ver coluna onde se encontra a peca
+getBoardPos([L1|Ls],X, Y, Yprox,PiecePlayer):-
+        write('getBoardPos'),nl,write('Yprox '),write(Yprox),nl, write('Y '), write(Y),nl,
+        Yprox < Y,
+        write('hmmm'),nl, %funcao de pesquisa da peca na linha
+        Var is Yprox + 1,
+        write('continuar'),
+        getBoardPos(Ls, X, Y, Var, PiecePlayer).
+
+
+getBoardPos([L1|Ls], X,Y, Yprox,PiecePlayer):-
+        write('getBoardPos'),nl,write('Yprox '),write(Yprox),nl, write('Y '), write(Y),nl,
+        Yprox == Y,
+        write('vai fazer linha'),nl,
+        getBoardPos(L1, X, 1,PiecePlayer).
+
+
+        %ver linha onde se encontra a peca
+        getBoardPos([L1|Ls], X, Xprox,PiecePlayer):-
+                write('getBoardPos da linha'),nl,
+                Xprox < X,
+                Var is Xprox + 1,write('proxima coluna'),nl,
+                getBoardPos(Ls, X, Var,PiecePlayer).%funcao de pesquisa da peca na linha
+
+
+getBoardPos([L1|Ls], X, Xprox,PiecePlayer):-
+        write('getBoardPos da linha'),nl,
+        Xprox == X,
+        PiecePlayer is L1.
+
+
+
 
 %verifica se os parametros introduzidos como posicoes finais nao saem do tabuleiro
 %se a linha e a coluna finais forem diferentes das posicoes iniciais chama a funcao move_diagonal
@@ -190,18 +221,20 @@ getBoardPos([L1|Ls], X,Y,Piece).%:-
 %se a coluna final for igual a inicial chama a funcao move_vertical
 legal_move(1, Board, Xinitial, Yinitial, Xfinal,Yfinal):-
         legal_pos(Xinitial,Yinitial), legal_pos(Xfinal,Yfinal),
-        getBoardPos(Board, Xinitial, Yinitial, PieceInitial),
-        PieceInitial > 0,
-        getBoardPos(Board, Xfinal, Yfinal, PieceFinal),
-        PieceFinal =< 0.
+        write('vou fazer o getBoardPos'),nl,
+        getBoardPos(Board, Xinitial, Yinitial, 1, PieceInitial),
+         write(PieceInitial),nl,PieceInitial > 0,
+        getBoardPos(Board, Xfinal, Yfinal, 1, PieceFinal),
+         write(PieceFinal),nl,PieceFinal =< 0.
 
 legal_move(2, Board, Xinitial, Yinitial, Xfinal,Yfinal):-
         legal_pos(Xinitial,Yinitial), legal_pos(Xfinal,Yfinal),
-        getBoardPos(Board, Xinitial, Yinitial, PieceInitial),
-        PieceInitial < 0,
-        getBoardPos(Board, Xfinal, Yfinal, PieceFinal),
-        PieceFinal >= 0.
-        
+        write('vou fazer o getBoardPos'),nl,
+        getBoardPos(Board, Xinitial, Yinitial, 1, PieceInitial),
+         write(PieceInitial),nl,PieceInitial < 0,
+        getBoardPos(Board, Xfinal, Yfinal, 1, PieceFinal),
+         write(PieceFinal),nl,PieceFinal >= 0.
+
 
 %verifica se a rainha se movimenta para uma posicao onde se encontra um baby ou rainha da equipa adversaria
 legal_queen_move(Xinitial,Yinitial,Xfinal,Yfinal).
