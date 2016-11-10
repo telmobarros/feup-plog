@@ -1,4 +1,4 @@
-board_initialized(Board):-
+/**board_initialized(Board):-
         Board=[[0,0,0,0,0,-20,0,0,0,0,0,0],          %estado inicial
                [0,0,0,0,0,0,0,0,0,0,0,0],
                [0,0,0,0,0,0,0,0,0,0,0,0],
@@ -10,21 +10,21 @@ board_initialized(Board):-
                [0,0,0,0,0,0,0,0,0,0,0,0],
                [0,0,0,0,0,0,0,0,0,0,0,0],
                [0,0,0,0,0,0,0,0,0,0,0,0],
-               [0,0,0,0,0,0,20,0,0,0,0,0]].
+               [0,0,0,0,0,0,20,0,0,0,0,0]].*/
 
-/**board_initialized(Board):-
-     Board=[[0,0,0,-1,0,0,0,0,0,-1,0,-1],            %estado intermédio
-           [0,-1,0,-1,-1,0,0,0,-1,0,0,-6],
-           [0,-1,0,0,0,0,0,0,0,0,-1,0],
-           [0,0,0,0,1,0,0,0,1,0,0,0],
-           [0,0,0,0,0,0,0,0,0,0,0,0],
-           [0,0,0,0,0,0,0,0,0,0,0,0],
-           [0,0,0,0,0,0,0,0,0,0,0,0],
-           [0,0,0,0,0,0,0,0,0,0,0,0],
-           [0,0,0,0,0,0,0,0,0,0,0,0],
-           [0,0,1,0,-1,0,0,0,0,0,1,0],
-           [9,0,0,0,0,0,0,0,0,0,0,1],
-           [0,1,0,0,0,0,-1,0,0,0,0,0]].*/
+board_initialized(Board):-
+        Board=[[0,0,0,-1,0,0,0,0,0,-1,0,-1],            %estado intermédio
+               [0,-1,0,-1,-1,0,0,0,-1,0,0,-6],
+               [0,-1,0,0,0,0,0,0,0,0,-1,0],
+               [0,0,0,0,1,0,0,0,1,0,0,0],
+               [0,0,0,0,0,0,0,0,0,0,0,0],
+               [0,0,0,0,0,0,0,0,0,0,0,0],
+               [0,0,0,0,0,0,0,0,0,0,0,0],
+               [0,0,0,0,0,0,0,0,0,0,0,0],
+               [0,0,0,0,0,0,0,0,0,0,0,0],
+               [0,0,1,0,-1,0,0,0,0,0,1,0],
+               [9,0,0,0,0,0,0,0,0,0,0,1],
+               [0,1,0,0,0,0,-1,0,0,0,0,0]].
 
 /**board_initialized(Board):-
      Board=[[0,0,0,0,0,0,0,0,0,0,0,0],           %estado final
@@ -198,26 +198,42 @@ getBoardLinePos([L1|Ls], X, X,PiecePlayer):- PiecePlayer is L1.
 
 
 %Coloca a peça PiecePlayer na posição X,Y do tabuleiro
-setBoardPos([L1|Ls],X, Y, PiecePlayer,[L1|NewLs]):- setBoardPos([L1|Ls],X, Y, 1,PiecePlayer,[L1|NewLs]).
+%setBoardPos([L1|Ls],X, Y, PiecePlayer,[L1|NewLs]):- setBoardPos([L1|Ls],X, Y, 1,PiecePlayer,[L1|NewLs]).
 
 setBoardPos([L1|Ls],X, Y, Yprox,PiecePlayer,[L1|NewLs]):-
         Yprox < Y,
         Var is Yprox + 1,
+        write('setBoardPos'),nl,
         setBoardPos(Ls, X, Y, Var, PiecePlayer, NewLs).
 
 setBoardPos([L1|Ls], X, Y, Y,PiecePlayer ,[NewL1|Ls]):-
-        setBoardLinePos(L1, X, PiecePlayer , NewL1).
+        write('vou passar para a setBoardLine'),nl,
+        setBoardLinePos(L1, X, 1, PiecePlayer , NewL1).
 
 
 %Coloca a peça PiecePlayer na posição X de uma linha
-setBoardLinePos([L1|Ls], X, PiecePlayer, [L1|NewLs]):- setBoardLinePos([L1|Ls], X, 1, PiecePlayer, [L1|NewLs]).
+%setBoardLinePos([L1|Ls], X, PiecePlayer, [L1|NewLs]):- setBoardLinePos([L1|Ls], X, 1, PiecePlayer, [L1|NewLs]).
 
 setBoardLinePos([L1|Ls], X, Xprox,PiecePlayer, [L1|NewLs]):-
         Xprox < X,
         Var is Xprox + 1,
+        write('setBoardLine'),nl,
         setBoardLinePos(Ls, X, Var,PiecePlayer, NewLs).
 
-setBoardLinePos([L1|Ls], X, X,PiecePlayer, [PiecePlayer|Ls]).
+
+/*setBoardLinePos([L1|Ls], 1, 1,PiecePlayer, [[]|NewLine]):-
+                           write(PiecePlayer),nl,
+                           write(Ls),nl,
+                           append([PiecePlayer],Ls,NewLine),
+                           write(NewLine),nl,
+                           write('encontrei, vou trocar'), nl.*/
+
+setBoardLinePos([_|Ls], X, X,PiecePlayer, [PiecePlayer|Ls]):-
+        % X > 1,
+        write(PiecePlayer),nl,
+        write(Ls),nl,
+        write('encontrei, vou trocar'), nl.
+
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -226,9 +242,106 @@ setBoardLinePos([L1|Ls], X, X,PiecePlayer, [PiecePlayer|Ls]).
 legal_pos(X,Y):-
         X >= 1, X =< 12,
         Y >= 1, Y =< 12.
-                
+
 %verifica se o movimento tem uma direção válida (horizontal, vertical ou diagonal)
-legal_orientation(Xinitial,Yinitial, Xfinal,Yfinal).
+legal_orientation(Xinitial,Yinitial, Xinitial,Yfinal).
+
+legal_orientation(Xinitial,Yinitial, Xfinal,Yinitial).
+
+legal_orientation(Xinitial,Yinitial, Xfinal,Yfinal):-
+        DeltaX is Xfinal - Xinitial,
+        DeltaY is Yfinal - Yinitial,
+        DeltaX == DeltaY.
+
+legal_orientation(Xinitial,Yinitial, Xfinal,Yfinal):-
+        DeltaX is Xfinal - Xinitial,
+        DeltaY is -(Yfinal - Yinitial),
+        DeltaX == DeltaY.
+
+%verifica se as casas entre a posicao inicial e final estão vazias
+%empty_cells(+Board, +Xinitial, +Yinitial, +Xfinal, +Yfinal)
+empty_cells(Board, Xinitial, Yinitial, Xinitial, Yfinal):- %vertical para baixo
+        Yfinal > Yinitial,
+        Yprox is Yinitial + 1,
+        (Yprox < Yfinal ->
+         getBoardPos(Board,Xinitial,Yprox,Piece),
+         Piece == 0,
+         empty_cells(Board, Xinitial, Yprox, Xinitial, Yfinal)
+        ;empty_cells(Board, Xinitial, Yprox, Xinitial, Yfinal)).
+
+empty_cells(Board, Xinitial, Yinitial, Xinitial, Yfinal):- %vertical para cima
+        Yfinal < Yinitial,
+        Yprox is Yinitial - 1,
+        (Yprox > Yfinal ->
+         getBoardPos(Board,Xinitial,Yprox,Piece),
+         Piece == 0,
+         empty_cells(Board, Xinitial, Yprox, Xinitial, Yfinal)
+        ;empty_cells(Board, Xinitial, Yprox, Xinitial, Yfinal)).
+
+empty_cells(Board, Xinitial, Yinitial, Xfinal, Yinitial):- %horizontal para a direita
+        Xfinal > Xinitial,
+        Xprox is Xinitial + 1,
+        (Xprox < Xfinal ->
+         getBoardPos(Board,Xprox,Yinitial,Piece),
+         Piece == 0,
+         empty_cells(Board, Xprox, Yinitial, Xfinal, Yinitial)
+        ;empty_cells(Board, Xprox, Yinitial, Xfinal, Yinitial)).
+
+empty_cells(Board, Xinitial, Yinitial, Xfinal, Yinitial):- %horizontal para a esquerda
+        Xfinal < Xinitial,
+        Xprox is Xinitial - 1,
+        (Xprox > Xfinal ->
+         getBoardPos(Board,Xprox,Yinitial,Piece),
+         Piece == 0,
+         empty_cells(Board, Xprox, Yinitial, Xfinal, Yinitial)
+        ;empty_cells(Board, Xprox, Yinitial, Xfinal, Yinitial)).
+
+empty_cells(Board, Xinitial, Yinitial, Xfinal, Yfinal):- %diagonal para baixo e para a direita
+        Xfinal > Xinitial,
+        Yfinal > Yinitial,
+        Xprox is Xinitial + 1,
+        Yprox is Yinitial + 1,
+        (Xprox < Xfinal ->
+         getBoardPos(Board,Xprox,Yprox,Piece),
+         Piece == 0,
+         empty_cells(Board, Xprox, Yprox, Xfinal, Yfinal)
+        ;empty_cells(Board, Xprox, Yprox, Xfinal, Yfinal)).
+
+empty_cells(Board, Xinitial, Yinitial, Xfinal, Yfinal):- %diagonal para baixo e para a esquerda
+        Xfinal < Xinitial,
+        Yfinal > Yinitial,
+        Xprox is Xinitial - 1,
+        Yprox is Yinitial + 1,
+        (Xprox > Xfinal ->
+         getBoardPos(Board,Xprox,Yprox,Piece),
+         Piece == 0,
+         empty_cells(Board, Xprox, Yprox, Xfinal, Yfinal)
+        ;empty_cells(Board, Xprox, Yprox, Xfinal, Yfinal)).
+
+empty_cells(Board, Xinitial, Yinitial, Xfinal, Yfinal):- %diagonal para cima e para a direita
+        Xfinal > Xinitial,
+        Yfinal < Yinitial,
+        Xprox is Xinitial + 1,
+        Yprox is Yinitial - 1,
+        (Xprox < Xfinal ->
+         getBoardPos(Board,Xprox,Yprox,Piece),
+         Piece == 0,
+         empty_cells(Board, Xprox, Yprox, Xfinal, Yfinal)
+        ;empty_cells(Board, Xprox, Yprox, Xfinal, Yfinal)).
+
+empty_cells(Board, Xinitial, Yinitial, Xfinal, Yfinal):- %diagonal para cima e para a esquerda
+        Xfinal < Xinitial,
+        Yfinal < Yinitial,
+        Xprox is Xinitial - 1,
+        Yprox is Yinitial - 1,
+        (Xprox > Xfinal ->
+         getBoardPos(Board,Xprox,Yprox,Piece),
+         Piece == 0,
+         empty_cells(Board, Xprox, Yprox, Xfinal, Yfinal)
+        ;empty_cells(Board, Xprox, Yprox, Xfinal, Yfinal)).
+
+empty_cells(Board, X, Y, X, Y).
+
 
 %verifica se os parametros introduzidos como posicoes iniciais e finais nao saem do tabuleiro
 %verifica se a posicao inicial corresponde a uma peça do jogador
@@ -238,6 +351,7 @@ legal_orientation(Xinitial,Yinitial, Xfinal,Yfinal).
 %legal_move(+Player, +Board, +Xinitial, +Yinitial, +Xfinal, -PieceInitial, -PieceFinal)
 legal_move(1, Board, Xinitial, Yinitial, Xfinal,Yfinal, PieceInitial, PieceFinal):-
         legal_pos(Xinitial,Yinitial), legal_pos(Xfinal,Yfinal), legal_orientation(Xinitial,Yinitial, Xfinal,Yfinal),
+        empty_cells(Board,Xinitial, Yinitial, Xfinal, Yfinal),
         getBoardPos(Board, Xinitial, Yinitial, PieceInitial),
         PieceInitial > 0,
         getBoardPos(Board, Xfinal, Yfinal, PieceFinal),
@@ -245,6 +359,7 @@ legal_move(1, Board, Xinitial, Yinitial, Xfinal,Yfinal, PieceInitial, PieceFinal
 
 legal_move(2, Board, Xinitial, Yinitial, Xfinal,Yfinal, PieceInitial, PieceFinal):-
         legal_pos(Xinitial,Yinitial), legal_pos(Xfinal,Yfinal), legal_orientation(Xinitial,Yinitial, Xfinal,Yfinal),
+        empty_cells(Board,Xinitial, Yinitial, Xfinal, Yfinal),
         getBoardPos(Board, Xinitial, Yinitial, PieceInitial),
         PieceInitial < 0,
         getBoardPos(Board, Xfinal, Yfinal, PieceFinal),
@@ -255,47 +370,47 @@ legal_move(2, Board, Xinitial, Yinitial, Xfinal,Yfinal, PieceInitial, PieceFinal
 move(1, Board, Xinitial, Yinitial, Xfinal, Yfinal, PieceInitial, PieceFinal, NewBoard):-
 	PieceInitial >=2,
 	PieceFinal < 0,
-	setBoardPos(Board, Xfinal, Yfinal,PieceInitial, Board1),
-	setBoardPos(Board1, Xinitial, Yinitial, 0, NewBoard).
+	setBoardPos(Board, Xfinal, Yfinal, 1, PieceInitial, Board1),
+	setBoardPos(Board1, Xinitial, Yinitial, 1, 0, NewBoard).
 
 move(1, Board, Xinitial, Yinitial, Xfinal, Yfinal, PieceInitial, 0, NewBoard):-
 	PieceInitial > 2,
         NewPieceInitial is PieceInitial - 1,
-	setBoardPos(Board, Xfinal, Yfinal, NewPieceInitial, Board1),
-	setBoardPos(Board1, Xinitial, Yinitial, 1, NewBoard).
+	setBoardPos(Board, Xfinal, Yfinal, 1, NewPieceInitial, Board1),
+	setBoardPos(Board1, Xinitial, Yinitial, 1, 1, NewBoard).
 
 move(1, Board, Xinitial, Yinitial, Xfinal, Yfinal, 1, PieceFinal,NewBoard):-
 	PieceFinal < 0,
-	setBoardPos(Board, Xfinal, Yfinal, 1, Board1),
-	setBoardPos(Board1, Xinitial, Yinitial, 0, NewBoard).
+	setBoardPos(Board, Xfinal, Yfinal, 1, 1, Board1),
+	setBoardPos(Board1, Xinitial, Yinitial, 1, 0, NewBoard).
 
 move(1, Board, Xinitial, Yinitial, Xfinal, Yfinal, 1, 0, NewBoard):-
 	queen_aprox(Board, 1, Xfinal, Yfinal, Xinitial, Yinitial),
-	setBoardPos(Board, Xfinal, Yfinal, 1, Board1),
-	setBoardPos(Board1, Xinitial, Yinitial, 0, NewBoard).
+	setBoardPos(Board, Xfinal, Yfinal, 1, 1, Board1),
+	setBoardPos(Board1, Xinitial, Yinitial, 1, 0, NewBoard).
 
 
 move(2, Board, Xinitial, Yinitial, Xfinal, Yfinal, PieceInitial, PieceFinal, NewBoard):-
         PieceInitial =< -2,
         PieceFinal > 0,
-        setBoardPos(Board, Xfinal, Yfinal, 1,PieceInitial, Board1),
+        setBoardPos(Board, Xfinal, Yfinal, 1, PieceInitial, Board1),
         setBoardPos(Board1, Xinitial, Yinitial, 1, 0, NewBoard).
 
 move(2, Board, Xinitial, Yinitial, Xfinal, Yfinal, PieceInitial, 0, NewBoard):-
         PieceInitial < -2,
         NewPieceInitial is PieceInitial + 1,
-        setBoardPos(Board, Xfinal, Yfinal, 1, NewPieceInitial, Board1),
-        setBoardPos(Board1, Xinitial, Yinitial, 1, 1, NewBoard).
+        setBoardPos(Board, Xfinal, Yfinal, 1,NewPieceInitial, Board1),
+        setBoardPos(Board1, Xinitial, Yinitial, 1,-1, NewBoard).
 
 move(2, Board, Xinitial, Yinitial, Xfinal, Yfinal, -1, PieceFinal,NewBoard):-
         PieceFinal > 0,
-        setBoardPos(Board, Xfinal, Yfinal, -1, Board1),
-        setBoardPos(Board1, Xinitial, Yinitial, 0, NewBoard).
+        setBoardPos(Board, Xfinal, Yfinal, 1,-1, Board1),
+        setBoardPos(Board1, Xinitial, Yinitial, 1, 0, NewBoard).
 
 move(2, Board, Xinitial, Yinitial, Xfinal, Yfinal, -1, 0, NewBoard):-
         queen_aprox(Board, 2, Xfinal, Yfinal, Xinitial, Yinitial),
-        setBoardPos(Board, Xfinal, Yfinal, -1, Board1),
-        setBoardPos(Board1, Xinitial, Yinitial, 0, NewBoard).
+        setBoardPos(Board, Xfinal, Yfinal, 1,-1, Board1),
+        setBoardPos(Board1, Xinitial, Yinitial, 1, 0, NewBoard).
 
 
 %verifica se a rainha se movimenta para uma posicao onde se encontra um baby ou rainha da equipa adversaria
