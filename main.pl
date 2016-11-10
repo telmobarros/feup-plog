@@ -12,6 +12,10 @@ monkey_queen:-
 play_game(Board, Player1Type, Player2Type, CurPlayer, CurPlayerType, Difficulty) :-
         display_board(Board),
         write('Player '), write(CurPlayer), write('  Player Type : '), write(CurPlayerType), nl, %%debug only
+        getQueenPos(2, Board, X, Y, Value),
+        write(X),nl,
+        write(Y),nl,
+        write(Value),nl,
         play_turn(Board, NewBoard, CurPlayer, CurPlayerType, Difficulty),
         switchPlayer(CurPlayer, NewPlayer, NewPlayerType, Player1Type, Player2Type),
         play_game(NewBoard, Player1Type, Player2Type, NewPlayer, NewPlayerType, Difficulty).

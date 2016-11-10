@@ -1,4 +1,4 @@
-/**board_initialized(Board):-
+board_initialized(Board):-
         Board=[[0,0,0,0,0,-20,0,0,0,0,0,0],          %estado inicial
                [0,0,0,0,0,0,0,0,0,0,0,0],
                [0,0,0,0,0,0,0,0,0,0,0,0],
@@ -10,9 +10,9 @@
                [0,0,0,0,0,0,0,0,0,0,0,0],
                [0,0,0,0,0,0,0,0,0,0,0,0],
                [0,0,0,0,0,0,0,0,0,0,0,0],
-               [0,0,0,0,0,0,20,0,0,0,0,0]].*/
+               [0,0,0,0,0,0,20,0,0,0,0,0]].
 
-board_initialized(Board):-
+/**board_initialized(Board):-
         Board=[[0,0,0,-1,0,0,0,0,0,-1,0,-1],            %estado intermédio
                [0,-1,0,-1,-1,0,0,0,-1,0,0,-6],
                [0,-1,0,0,0,0,0,0,0,0,-1,0],
@@ -24,7 +24,7 @@ board_initialized(Board):-
                [0,0,0,0,0,0,0,0,0,0,0,0],
                [0,0,1,0,-1,0,0,0,0,0,1,0],
                [9,0,0,0,0,0,0,0,0,0,0,1],
-               [0,1,0,0,0,0,-1,0,0,0,0,0]].
+               [0,1,0,0,0,0,-1,0,0,0,0,0]].*/
 
 /**board_initialized(Board):-
      Board=[[0,0,0,0,0,0,0,0,0,0,0,0],           %estado final
@@ -425,8 +425,69 @@ move(2, Board, Xinitial, Yinitial, Xfinal, Yfinal, -1, 0, NewBoard):-
 %guarda as novas posicoes apos fazer o movimento vertical da peca
 %vertical_move(Xinitial, Yinitial, Xfinal,Yfinal).
 
-%pesquisa posicao rainha
-queen_pos(Jog,Board, X, Y). %IMPORTANTE
+%pesquisa posicao rainha e valor
+getQueenPos(Player, [L1|Ls], X, Y, Value):-
+        getQueenPosAux(Player, [L1|Ls], 1, X, Y, Value).
+
+getQueenPosAux(Player, [L1|Ls], Yprox, X, Y, Value):-
+        getQueenLinePosAux(Player,L1, 1, Yprox, X, Y, Value),
+        Var is Yprox + 1,
+        getQueenPosAux(Player, Ls, Var, X, Y, Value).
+
+getQueenPosAux(Player, [], Yprox, X, Y, Value).%:- write('acabou tudo').
+
+getQueenLinePosAux(1, [L1|Ls], Xprox, Yprox, X, Y, Value):-
+        L1 < 2,
+        Var is Xprox + 1,
+        getQueenLinePosAux(1, Ls, Var, Yprox, X, Y, Value).
+
+getQueenLinePosAux(2, [L1|Ls], Xprox, Yprox, X, Y, Value):-
+        L1 > -2,
+        Var is Xprox + 1,
+        getQueenLinePosAux(2, Ls, Var, Yprox, X, Y, Value).
+
+getQueenLinePosAux(1, [L1|Ls], Xprox, Yprox, X, Y, Value):-
+        L1 >= 2,
+        Value is L1,
+        X is Xprox,
+        Y is Yprox.
+
+getQueenLinePosAux(2, [L1|Ls], Xprox, Yprox, X, Y, Value):-
+        L1 =< -2,
+        Value is L1,
+        X is Xprox,
+        Y is Yprox.
+
+getQueenLinePosAux(Player, [], Xprox, Yprox, X, Y, Value).%:- write(X),write('acabou a linha').
+
+/*getQueenPosAux(Player, [L1|Ls], Yprox, X, Y, Value):-
+        X == _,
+        write(X),nl,
+        getQueenLinePosAux(Player,L1, 1, Yprox, X, Y, Value).
+
+getQueenPosAux(Player, [L1|Ls], 13, X, Y, Value).
+
+getQueenLinePosAux(Player, [L1|Ls], Xprox, Yprox, X, Y, Value):-
+        L1 >= -1,
+        L1 =< 1,
+        Var is Xprox + 1,
+        getQueenLinePosAux(Player, Ls, Var, Yprox, X, Y, Value).
+
+getQueenLinePosAux(1, [L1|Ls], Xprox, Yprox, X, Y, Value):-
+        L1 >= 2,
+        Value is L1,
+        X is Xprox,
+        Y is Yprox.
+
+getQueenLinePosAux(2, [L1|Ls], Xprox, Yprox, X, Y, Value):-
+        L1 =< -2,
+        Value is L1,
+        X is Xprox,
+        Y is Yprox.
+
+getQueenLinePosAux(Player, [L1|Ls], 13, Yprox, X, Y, Value):-
+        Var is Yprox+1,
+        getQueenPosAux(Player, [L1|Ls], Var, X, Y, Value).*/
 
 %verifica se a peca ao movimentar-se se se aproxima da rainha
 queen_aprox(Board, Player, Xinitial, Yinitial, Xfinal, Yfinal). %IMPORTANTE
