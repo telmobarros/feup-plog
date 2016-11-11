@@ -15,7 +15,7 @@
                [0,0,0,0,0,0,0,0,0,0,0,0],
                [0,0,0,0,0,0,20,0,0,0,0,0]].*/
 
-board_initialized(Board):-
+/**board_initialized(Board):-
         Board=[[0,0,0,-1,0,0,0,0,0,-1,0,-1],            %estado intermédio
                [0,-1,0,-1,-1,0,0,0,-1,0,0,-6],
                [0,-1,0,0,0,0,0,0,0,0,-1,0],
@@ -27,9 +27,9 @@ board_initialized(Board):-
                [0,0,0,0,0,0,0,0,0,0,0,0],
                [0,0,1,0,-1,0,0,0,0,0,1,0],
                [9,0,0,0,0,0,0,0,0,0,0,1],
-               [0,1,0,0,0,0,-1,0,0,0,0,0]].
+               [0,1,0,0,0,0,-1,0,0,0,0,0]].*/
 
-/**board_initialized(Board):-
+board_initialized(Board):-
      Board=[[0,0,0,0,0,0,0,0,0,0,0,0],           %estado final
            [0,0,0,0,0,0,0,0,0,0,0,0],
            [0,0,0,0,0,0,0,0,0,0,0,0],
@@ -41,12 +41,12 @@ board_initialized(Board):-
            [0,0,0,0,0,0,0,0,0,0,0,0],
            [0,0,0,0,0,0,0,0,0,0,0,0],
            [0,0,0,0,0,0,0,0,0,0,0,0],
-           [0,0,0,0,0,0,0,0,0,0,0,0]].*/
+           [0,0,0,0,0,0,0,0,0,0,0,0]].
 
 
 
 display_board([L1|Ls]):-
-        write('  A    B    C    D    E    F    G    H    I    J    K    L'), nl,        %imprime cabeçalho com letras das colunas
+        write('  1    2    3    4    5    6    7    8    9    10    11    12'), nl,        %imprime cabeçalho com letras das colunas
         write('-------------------------------------------------------------'), nl,     %imprime separador das linhas
         display_lines([L1|Ls], 1).
 
@@ -170,11 +170,11 @@ switchPlayer(2, NewPlayer, NewPlayerType, Player1Type, Player2Type) :-
 %Y numero da linha
 readMove(Xinitial, Yinitial, Xfinal, Yfinal) :-
         write('Piece to move:'), nl,
-        write('X->'), read(Xinitial), 
-        write('Y->'), read(Yinitial), nl,
+        write('Coluna->'), read(Xinitial), 
+        write('Linha->'), read(Yinitial), nl,
         write('Where to move:'), nl,
-        write('X->'), read(Xfinal),
-        write('Y->'), read(Yfinal), nl.
+        write('Coluna->'), read(Xfinal),
+        write('Linha->'), read(Yfinal), nl.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -210,7 +210,6 @@ setBoardPos([L1|Ls],X, Y, Yprox,PiecePlayer,[L1|NewLs]):-
         setBoardPos(Ls, X, Y, Var, PiecePlayer, NewLs).
 
 setBoardPos([L1|Ls], X, Y, Y,PiecePlayer ,[NewL1|Ls]):-
-        write('vou passar para a setBoardLine'),nl,
         setBoardLinePos(L1, X, 1, PiecePlayer , NewL1).
 
 
@@ -220,7 +219,6 @@ setBoardPos([L1|Ls], X, Y, Y,PiecePlayer ,[NewL1|Ls]):-
 setBoardLinePos([L1|Ls], X, Xprox,PiecePlayer, [L1|NewLs]):-
         Xprox < X,
         Var is Xprox + 1,
-        write('setBoardLine'),nl,
         setBoardLinePos(Ls, X, Var,PiecePlayer, NewLs).
 
 
@@ -355,7 +353,24 @@ empty_cells(Board, X, Y, X, Y).
 legal_move(1, Board, Xinitial, Yinitial, Xfinal,Yfinal):-
         legal_pos(Xinitial,Yinitial), legal_pos(Xfinal,Yfinal), legal_orientation(Xinitial,Yinitial, Xfinal,Yfinal),
         getBoardPos(Board, Xinitial, Yinitial, PieceInitial),
-        PieceInitial > 0,
+        PieceInitial > 2,
+        getBoardPos(Board, Xfinal, Yfinal, PieceFinal),
+        PieceFinal =< 0,
+        empty_cells(Board,Xinitial, Yinitial, Xfinal, Yfinal).
+legal_move(1, Board, Xinitial, Yinitial, Xfinal,Yfinal):-
+        legal_pos(Xinitial,Yinitial), legal_pos(Xfinal,Yfinal), legal_orientation(Xinitial,Yinitial, Xfinal,Yfinal),
+        getBoardPos(Board, Xinitial, Yinitial, PieceInitial),
+        PieceInitial == 2,
+        getBoardPos(Board, Xfinal, Yfinal, PieceFinal),
+        PieceFinal < 0,
+        empty_cells(Board,Xinitial, Yinitial, Xfinal, Yfinal).
+
+%move para o baby do player 1
+legal_move(1, Board, Xinitial, Yinitial, Xfinal,Yfinal):-
+        legal_pos(Xinitial,Yinitial), legal_pos(Xfinal,Yfinal), legal_orientation(Xinitial,Yinitial, Xfinal,Yfinal),
+        getBoardPos(Board, Xinitial, Yinitial, PieceInitial),
+        PieceInitial == 1,
+        queen_aprox(Board, 1, Xfinal, Yfinal, Xinitial, Yinitial),
         getBoardPos(Board, Xfinal, Yfinal, PieceFinal),
         PieceFinal =< 0,
         empty_cells(Board,Xinitial, Yinitial, Xfinal, Yfinal).
@@ -363,7 +378,26 @@ legal_move(1, Board, Xinitial, Yinitial, Xfinal,Yfinal):-
 legal_move(2, Board, Xinitial, Yinitial, Xfinal,Yfinal):-
         legal_pos(Xinitial,Yinitial), legal_pos(Xfinal,Yfinal), legal_orientation(Xinitial,Yinitial, Xfinal,Yfinal),
         getBoardPos(Board, Xinitial, Yinitial, PieceInitial),
-        PieceInitial < 0,
+        PieceInitial < -2,
+        getBoardPos(Board, Xfinal, Yfinal, PieceFinal),
+        PieceFinal >= 0,
+        empty_cells(Board,Xinitial, Yinitial, Xfinal, Yfinal).
+
+legal_move(2, Board, Xinitial, Yinitial, Xfinal,Yfinal):-
+        legal_pos(Xinitial,Yinitial), legal_pos(Xfinal,Yfinal), legal_orientation(Xinitial,Yinitial, Xfinal,Yfinal),
+        getBoardPos(Board, Xinitial, Yinitial, PieceInitial),
+        PieceInitial == -2,
+        getBoardPos(Board, Xfinal, Yfinal, PieceFinal),
+        PieceFinal > 0,
+        empty_cells(Board,Xinitial, Yinitial, Xfinal, Yfinal).
+
+%move para o baby do player 2
+legal_move(2, Board, Xinitial, Yinitial, Xfinal,Yfinal):-
+        legal_pos(Xinitial,Yinitial), legal_pos(Xfinal,Yfinal), legal_orientation(Xinitial,Yinitial, Xfinal,Yfinal),
+        getBoardPos(Board, Xinitial, Yinitial, PieceInitial),
+        PieceInitial == -1,
+        write('vou ver os moves para o baby'),nl,
+        queen_aprox(Board, 2, Xfinal, Yfinal, Xinitial, Yinitial),
         getBoardPos(Board, Xfinal, Yfinal, PieceFinal),
         PieceFinal >= 0,
         empty_cells(Board,Xinitial, Yinitial, Xfinal, Yfinal).
@@ -393,9 +427,9 @@ move(1, Board, Xinitial, Yinitial, Xfinal, Yfinal, 1, PieceFinal,NewBoard):-
 	setBoardPos(Board, Xfinal, Yfinal, 1, 1, Board1),
 	setBoardPos(Board1, Xinitial, Yinitial, 1, 0, NewBoard).
 
+
+%movimento do baby quando nao come nenhuma peca
 move(1, Board, Xinitial, Yinitial, Xfinal, Yfinal, 1, 0, NewBoard):-
-        write('yolo'),
-	queen_aprox(Board, 1, Xfinal, Yfinal, Xinitial, Yinitial),
 	setBoardPos(Board, Xfinal, Yfinal, 1, 1, Board1),
 	setBoardPos(Board1, Xinitial, Yinitial, 1, 0, NewBoard).
 
@@ -418,7 +452,6 @@ move(2, Board, Xinitial, Yinitial, Xfinal, Yfinal, -1, PieceFinal,NewBoard):-
         setBoardPos(Board1, Xinitial, Yinitial, 1, 0, NewBoard).
 
 move(2, Board, Xinitial, Yinitial, Xfinal, Yfinal, -1, 0, NewBoard):-
-        queen_aprox(Board, 2, Xfinal, Yfinal, Xinitial, Yinitial),
         setBoardPos(Board, Xfinal, Yfinal, 1,-1, Board1),
         setBoardPos(Board1, Xinitial, Yinitial, 1, 0, NewBoard).
 
@@ -444,7 +477,10 @@ getQueenPosAux(Player, [L1|Ls], Yprox, X, Y, Value):-
         Var is Yprox + 1,
         getQueenPosAux(Player, Ls, Var, X, Y, Value).
 
-getQueenPosAux(Player, [], Yprox, X, Y, Value).%:- write('acabou tudo').
+
+getQueenPosAux(Player, [], Yprox, X, Y, Value):-
+        nonvar(Value).
+%:- write('acabou tudo').
 
 getQueenLinePosAux(1, [L1|Ls], Xprox, Yprox, X, Y, Value):-
         L1 < 2,
@@ -468,40 +504,62 @@ getQueenLinePosAux(2, [L1|Ls], Xprox, Yprox, X, Y, Value):-
         X is Xprox,
         Y is Yprox.
 
-getQueenLinePosAux(Player, [], Xprox, Yprox, X, Y, Value).%:- write(X),write('acabou a linha').
+getQueenLinePosAux(Player, [], Xprox, Yprox, X, Y, Value).        %:- write(X),write('acabou a linha').
 
 /*getQueenPosAux(Player, [L1|Ls], Yprox, X, Y, Value):-
-        X == _,
-        write(X),nl,
-        getQueenLinePosAux(Player,L1, 1, Yprox, X, Y, Value).
+                         X == _,
+                         write(X),nl,
+                         getQueenLinePosAux(Player,L1, 1, Yprox, X, Y, Value).
 
-getQueenPosAux(Player, [L1|Ls], 13, X, Y, Value).
+                         getQueenPosAux(Player, [L1|Ls], 13, X, Y, Value).
 
-getQueenLinePosAux(Player, [L1|Ls], Xprox, Yprox, X, Y, Value):-
-        L1 >= -1,
-        L1 =< 1,
-        Var is Xprox + 1,
-        getQueenLinePosAux(Player, Ls, Var, Yprox, X, Y, Value).
+                         getQueenLinePosAux(Player, [L1|Ls], Xprox, Yprox, X, Y, Value):-
+                         L1 >= -1,
+                         L1 =< 1,
+                         Var is Xprox + 1,
+                         getQueenLinePosAux(Player, Ls, Var, Yprox, X, Y, Value).
 
-getQueenLinePosAux(1, [L1|Ls], Xprox, Yprox, X, Y, Value):-
-        L1 >= 2,
-        Value is L1,
-        X is Xprox,
-        Y is Yprox.
+                         getQueenLinePosAux(1, [L1|Ls], Xprox, Yprox, X, Y, Value):-
+                         L1 >= 2,
+                         Value is L1,
+                         X is Xprox,
+                         Y is Yprox.
 
-getQueenLinePosAux(2, [L1|Ls], Xprox, Yprox, X, Y, Value):-
-        L1 =< -2,
-        Value is L1,
-        X is Xprox,
-        Y is Yprox.
+                         getQueenLinePosAux(2, [L1|Ls], Xprox, Yprox, X, Y, Value):-
+                         L1 =< -2,
+                         Value is L1,
+                         X is Xprox,
+                         Y is Yprox.
 
-getQueenLinePosAux(Player, [L1|Ls], 13, Yprox, X, Y, Value):-
-        Var is Yprox+1,
-        getQueenPosAux(Player, [L1|Ls], Var, X, Y, Value).*/
+                         getQueenLinePosAux(Player, [L1|Ls], 13, Yprox, X, Y, Value):-
+                         Var is Yprox+1,
+                         getQueenPosAux(Player, [L1|Ls], Var, X, Y, Value).*/
 
 %verifica se a peca ao movimentar-se se se aproxima da rainha
-queen_aprox(Board, Player, Xinitial, Yinitial, Xfinal, Yfinal). %IMPORTANTE
+queen_aprox(Board, 1, Xfinal, Yfinal, Xinitial, Yinitial):-
+          write('hmmmmm'),nl,
+        getQueenPos(2, Board, Xrainha, Yrainha, Value),
+        distancia(Xinitial,Yinitial,Xrainha,Yrainha,Distinitial),
+        distancia(Xfinal,Yfinal,Xrainha,Yrainha,Distfinal),
+        Distfinal < Distinitial.
 
+queen_aprox(Board, 2, Xfinal, Yfinal, Xinitial, Yinitial):-
+        write('hmmmmm'),nl,
+        getQueenPos(1, Board, Xrainha, Yrainha, Value),
+        write('x'),write(Xrainha),nl,
+        distancia(Xinitial,Yinitial,Xrainha,Yrainha,Distinitial),
+        distancia(Xfinal,Yfinal,Xrainha,Yrainha,Distfinal),
+        Distfinal < Distinitial.
+
+
+
+distancia(X,Y,Xrainha,Yrainha,Dist):-
+        Xvar is Xrainha - X,
+        Yvar is Yrainha - Y,
+        Subx is Xvar * Xvar,
+        Suby is Yvar * Yvar,
+        Distint is Subx + Suby,
+        Dist is sqrt(Distint).
 
 valid_moves([L1|Ls], Player, ListOfMoves):-
         valid_movesAux([L1|Ls], Player, [], 1, 1,ListOfMoves),
@@ -513,24 +571,24 @@ valid_movesAux([L1|Ls], 1, ListOfMovesTmp, X, Y, ListOfMoves):-
         Y < 13,
         getBoardPos([L1|Ls],X, Y, PiecePlayer),
         (PiecePlayer >= 1 ->
-        valid_moveAux([L1|Ls], 1, [], X, Y, 1, 1, ListOfMovesTmp1),
-        append(ListOfMovesTmp,ListOfMovesTmp1,NewListOfMovesTmp),
-        Xprox is X + 1,
-        valid_movesAux([L1|Ls], 1, NewListOfMovesTmp, Xprox, Y, ListOfMoves)
+         valid_moveAux([L1|Ls], 1, [], X, Y, 1, 1, ListOfMovesTmp1),
+         append(ListOfMovesTmp,ListOfMovesTmp1,NewListOfMovesTmp),
+         Xprox is X + 1,
+         valid_movesAux([L1|Ls], 1, NewListOfMovesTmp, Xprox, Y, ListOfMoves)
         ;Xprox is X + 1,
-        valid_movesAux([L1|Ls], 1, ListOfMovesTmp, Xprox, Y, ListOfMoves)).
+         valid_movesAux([L1|Ls], 1, ListOfMovesTmp, Xprox, Y, ListOfMoves)).
 
 valid_movesAux([L1|Ls], 2, ListOfMovesTmp, X, Y, ListOfMoves):-
         X < 13,
         Y < 13,
         getBoardPos([L1|Ls],X, Y, PiecePlayer),
         (PiecePlayer =< -1 ->
-        valid_moveAux([L1|Ls], 2, [], X, Y, 1, 1, ListOfMovesTmp1),
-        append(ListOfMovesTmp,ListOfMovesTmp1,NewListOfMovesTmp),
-        Xprox is X + 1,
-        valid_movesAux([L1|Ls], 2, NewListOfMovesTmp, Xprox, Y, ListOfMoves)
+         valid_moveAux([L1|Ls], 2, [], X, Y, 1, 1, ListOfMovesTmp1),
+         append(ListOfMovesTmp,ListOfMovesTmp1,NewListOfMovesTmp),
+         Xprox is X + 1,
+         valid_movesAux([L1|Ls], 2, NewListOfMovesTmp, Xprox, Y, ListOfMoves)
         ;Xprox is X + 1,
-        valid_movesAux([L1|Ls], 2, ListOfMovesTmp, Xprox, Y, ListOfMoves)).
+         valid_movesAux([L1|Ls], 2, ListOfMovesTmp, Xprox, Y, ListOfMoves)).
 
 valid_movesAux([L1|Ls], Player, ListOfMovesTmp, 13, Y, ListOfMoves):-
         Y < 13,
@@ -543,11 +601,11 @@ valid_moveAux([L1|Ls], Player, ListOfMovesTmp, Xinitial, Yinitial, Xfinal, Yfina
         Xfinal < 13,
         Yfinal < 13,
         (legal_move(Player, [L1|Ls], Xinitial, Yinitial, Xfinal,Yfinal) ->
-        append(ListOfMovesTmp,[[Xinitial,Yinitial,Xfinal,Yfinal]],NewListOfMovesTmp),
-        Xprox is Xfinal + 1,
-        valid_moveAux([L1|Ls], Player, NewListOfMovesTmp, Xinitial, Yinitial, Xprox, Yfinal, ListOfMoves)
+         append(ListOfMovesTmp,[[Xinitial,Yinitial,Xfinal,Yfinal]],NewListOfMovesTmp),
+         Xprox is Xfinal + 1,
+         valid_moveAux([L1|Ls], Player, NewListOfMovesTmp, Xinitial, Yinitial, Xprox, Yfinal, ListOfMoves)
         ;Xprox is Xfinal + 1,
-        valid_moveAux([L1|Ls], Player, ListOfMovesTmp, Xinitial, Yinitial, Xprox, Yfinal, ListOfMoves)).
+         valid_moveAux([L1|Ls], Player, ListOfMovesTmp, Xinitial, Yinitial, Xprox, Yfinal, ListOfMoves)).
 
 valid_moveAux([L1|Ls], Player, ListOfMovesTmp, Xinitial, Yinitial, 13, Yfinal, ListOfMoves):-
         Yfinal < 13,
@@ -562,10 +620,10 @@ choose_move(Difficulty,Board, [Move|Ls], Xinitial, Yinitial, Xfinal, Yfinal):-
         %ESCOLHE A PRIMEIRA JOGADA POSSIVEL
         getCoordsFromMove(Move, Xinitial,Yinitial,Xfinal,Yfinal),
         write(Xinitial),write(Yinitial),write(Xfinal),write(Yfinal),nl.
-             
+
 getCoordsFromMove([Xinitial,Yinitial,Xfinal,Yfinal], Xinitial,Yinitial,Xfinal,Yfinal).
-        
-        
+
+
 
 
 %verifica se existe um baby da equipa adversaria na posicao final
@@ -577,4 +635,26 @@ getCoordsFromMove([Xinitial,Yinitial,Xfinal,Yfinal], Xinitial,Yinitial,Xfinal,Yf
 %dropBaby(Board,X,Y,Player). %IMPORTANTE
 
 %acaba o jogo?
-game_over(Board, Winner). %IMPORTANTE
+%game_over Player 2
+game_over(Board, Winner):- %IMPORTANTE
+        \+getQueenPos(2, Board, Xrainha, Yrainha, Value),
+        Winner is 1.
+
+game_over(Board, Winner):- %IMPORTANTE
+        valid_moves(Board, 2, ListOfMoves),
+        length(ListOfMoves,Len),
+        Len == 0,
+        Winner is 1.
+
+
+%game_over Player 1
+game_over(Board, Winner):- %IMPORTANTE
+        \+getQueenPos(1, Board, Xrainha, Yrainha, Value),
+        Winner is 2.
+
+%game_over Player 1
+game_over(Board, Winner):- %IMPORTANTE
+        valid_moves(Board, 1, ListOfMoves),
+        length(ListOfMoves,Len),
+        Len == 0,
+        Winner is 2.

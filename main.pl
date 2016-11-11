@@ -10,15 +10,23 @@ monkey_queen:-
 
 
 play_game(Board, Player1Type, Player2Type, CurPlayer, CurPlayerType, Difficulty) :-
-        display_board(Board),
+        write('Player1'),nl,
+        valid_moves(Board, 1, ListOfMoves),
+        write(ListOfMoves),nl,
+        write('Player2'),nl,
+        valid_moves(Board, 2, ListOfMoves2),
+        write(ListOfMoves2),nl,
+        write('Play game'),nl,
+        \+game_over(Board,Winner),
+        once(display_board(Board)),
         write('Player '), write(CurPlayer), write('  Player Type : '), write(CurPlayerType), nl, %%debug only
-        getQueenPos(2, Board, X, Y, Value),
-        write(X),nl,
-        write(Y),nl,
-        write(Value),nl,
         play_turn(Board, NewBoard, CurPlayer, CurPlayerType, Difficulty),
         switchPlayer(CurPlayer, NewPlayer, NewPlayerType, Player1Type, Player2Type),
         play_game(NewBoard, Player1Type, Player2Type, NewPlayer, NewPlayerType, Difficulty).
+
+play_game(Board, Player1Type, Player2Type, CurPlayer, CurPlayerType, Difficulty):-
+        game_over(Board,Winner),
+        write('winner of the game player '), write(Winner),nl.
 
 play_turn(Board, NewBoard, CurPlayer, 0, Difficulty) :-
         repeat,
