@@ -23,12 +23,15 @@ play_game(Board, Player1Type, Player2Type, CurPlayer, CurPlayerType, Difficulty)
 play_turn(Board, NewBoard, CurPlayer, 0, Difficulty) :-
         repeat,
         once(readMove(Xinitial, Yinitial, Xfinal, Yfinal)),
-        legal_move(CurPlayer, Board, Xinitial, Yinitial, Xfinal, Yfinal, PieceInitial, PieceFinal),
-        write('Movimento valido'),nl,
-        write(PieceInitial),nl,
-        write(PieceFinal),nl,
-        move(CurPlayer, Board, Xinitial, Yinitial, Xfinal, Yfinal, PieceInitial, PieceFinal, NewBoard),
-        write('Movimento efetuado'),nl.
+        legal_move(CurPlayer, Board, Xinitial, Yinitial, Xfinal, Yfinal),
+        %write('Movimento valido'),nl,
+        %write(PieceInitial),nl,
+        %write(PieceFinal),nl,
+        move(CurPlayer, Board, Xinitial, Yinitial, Xfinal, Yfinal, NewBoard).
+        %write('Movimento efetuado'),nl.
 
 
-play_turn(Board, NewBoard, CurPlayer, 1, Difficulty).
+play_turn(Board, NewBoard, CurPlayer, 1, Difficulty) :-
+        valid_moves(Board, CurPlayer, ListOfMoves),
+        choose_move(Difficulty,Board, ListOfMoves, Xinitial, Yinitial, Xfinal, Yfinal),    
+        move(CurPlayer, Board, Xinitial, Yinitial, Xfinal, Yfinal, NewBoard).

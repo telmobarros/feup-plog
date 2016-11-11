@@ -1,4 +1,7 @@
-board_initialized(Board):-
+%:-include(library(random)).
+
+
+/**board_initialized(Board):-
         Board=[[0,0,0,0,0,-20,0,0,0,0,0,0],          %estado inicial
                [0,0,0,0,0,0,0,0,0,0,0,0],
                [0,0,0,0,0,0,0,0,0,0,0,0],
@@ -10,9 +13,9 @@ board_initialized(Board):-
                [0,0,0,0,0,0,0,0,0,0,0,0],
                [0,0,0,0,0,0,0,0,0,0,0,0],
                [0,0,0,0,0,0,0,0,0,0,0,0],
-               [0,0,0,0,0,0,20,0,0,0,0,0]].
+               [0,0,0,0,0,0,20,0,0,0,0,0]].*/
 
-/**board_initialized(Board):-
+board_initialized(Board):-
         Board=[[0,0,0,-1,0,0,0,0,0,-1,0,-1],            %estado intermédio
                [0,-1,0,-1,-1,0,0,0,-1,0,0,-6],
                [0,-1,0,0,0,0,0,0,0,0,-1,0],
@@ -24,7 +27,7 @@ board_initialized(Board):-
                [0,0,0,0,0,0,0,0,0,0,0,0],
                [0,0,1,0,-1,0,0,0,0,0,1,0],
                [9,0,0,0,0,0,0,0,0,0,0,1],
-               [0,1,0,0,0,0,-1,0,0,0,0,0]].*/
+               [0,1,0,0,0,0,-1,0,0,0,0,0]].
 
 /**board_initialized(Board):-
      Board=[[0,0,0,0,0,0,0,0,0,0,0,0],           %estado final
@@ -349,24 +352,30 @@ empty_cells(Board, X, Y, X, Y).
 %verifica se o movimento tem uma direção válida (horizontal, vertical ou diagonal)
 %verifica se as casas entre a posicao inicial e a posicao final estao livres
 %legal_move(+Player, +Board, +Xinitial, +Yinitial, +Xfinal, -PieceInitial, -PieceFinal)
-legal_move(1, Board, Xinitial, Yinitial, Xfinal,Yfinal, PieceInitial, PieceFinal):-
+legal_move(1, Board, Xinitial, Yinitial, Xfinal,Yfinal):-
         legal_pos(Xinitial,Yinitial), legal_pos(Xfinal,Yfinal), legal_orientation(Xinitial,Yinitial, Xfinal,Yfinal),
-        empty_cells(Board,Xinitial, Yinitial, Xfinal, Yfinal),
         getBoardPos(Board, Xinitial, Yinitial, PieceInitial),
         PieceInitial > 0,
         getBoardPos(Board, Xfinal, Yfinal, PieceFinal),
-        PieceFinal =< 0.
+        PieceFinal =< 0,
+        empty_cells(Board,Xinitial, Yinitial, Xfinal, Yfinal).
 
-legal_move(2, Board, Xinitial, Yinitial, Xfinal,Yfinal, PieceInitial, PieceFinal):-
+legal_move(2, Board, Xinitial, Yinitial, Xfinal,Yfinal):-
         legal_pos(Xinitial,Yinitial), legal_pos(Xfinal,Yfinal), legal_orientation(Xinitial,Yinitial, Xfinal,Yfinal),
-        empty_cells(Board,Xinitial, Yinitial, Xfinal, Yfinal),
         getBoardPos(Board, Xinitial, Yinitial, PieceInitial),
         PieceInitial < 0,
         getBoardPos(Board, Xfinal, Yfinal, PieceFinal),
-        PieceFinal >= 0.
+        PieceFinal >= 0,
+        empty_cells(Board,Xinitial, Yinitial, Xfinal, Yfinal).
 
 %move a peça da posição inicial para a final
-%move(+Player, +Board, +Xinitial, +Yinitial, +Xfinal, +Yfinal, +PieceInitial, +PieceFinal, -NewBoard)
+%move(+Player, +Board, +Xinitial, +Yinitial, +Xfinal, +Yfinal, -NewBoard)
+move(Player, Board, Xinitial, Yinitial, Xfinal, Yfinal, NewBoard):-
+        getBoardPos(Board, Xinitial, Yinitial, PieceInitial),
+        getBoardPos(Board, Xfinal, Yfinal, PieceFinal),
+        move(Player, Board, Xinitial, Yinitial, Xfinal, Yfinal, PieceInitial, PieceFinal, NewBoard).
+
+
 move(1, Board, Xinitial, Yinitial, Xfinal, Yfinal, PieceInitial, PieceFinal, NewBoard):-
 	PieceInitial >=2,
 	PieceFinal < 0,
@@ -385,6 +394,7 @@ move(1, Board, Xinitial, Yinitial, Xfinal, Yfinal, 1, PieceFinal,NewBoard):-
 	setBoardPos(Board1, Xinitial, Yinitial, 1, 0, NewBoard).
 
 move(1, Board, Xinitial, Yinitial, Xfinal, Yfinal, 1, 0, NewBoard):-
+        write('yolo'),
 	queen_aprox(Board, 1, Xfinal, Yfinal, Xinitial, Yinitial),
 	setBoardPos(Board, Xfinal, Yfinal, 1, 1, Board1),
 	setBoardPos(Board1, Xinitial, Yinitial, 1, 0, NewBoard).
@@ -492,13 +502,79 @@ getQueenLinePosAux(Player, [L1|Ls], 13, Yprox, X, Y, Value):-
 %verifica se a peca ao movimentar-se se se aproxima da rainha
 queen_aprox(Board, Player, Xinitial, Yinitial, Xfinal, Yfinal). %IMPORTANTE
 
+
+valid_moves([L1|Ls], Player, ListOfMoves):-
+        valid_movesAux([L1|Ls], Player, [], 1, 1,ListOfMoves),
+        write(ListOfMoves),nl.
+
+
+valid_movesAux([L1|Ls], 1, ListOfMovesTmp, X, Y, ListOfMoves):-
+        X < 13,
+        Y < 13,
+        getBoardPos([L1|Ls],X, Y, PiecePlayer),
+        (PiecePlayer >= 1 ->
+        valid_moveAux([L1|Ls], 1, [], X, Y, 1, 1, ListOfMovesTmp1),
+        append(ListOfMovesTmp,ListOfMovesTmp1,NewListOfMovesTmp),
+        Xprox is X + 1,
+        valid_movesAux([L1|Ls], 1, NewListOfMovesTmp, Xprox, Y, ListOfMoves)
+        ;Xprox is X + 1,
+        valid_movesAux([L1|Ls], 1, ListOfMovesTmp, Xprox, Y, ListOfMoves)).
+
+valid_movesAux([L1|Ls], 2, ListOfMovesTmp, X, Y, ListOfMoves):-
+        X < 13,
+        Y < 13,
+        getBoardPos([L1|Ls],X, Y, PiecePlayer),
+        (PiecePlayer =< -1 ->
+        valid_moveAux([L1|Ls], 2, [], X, Y, 1, 1, ListOfMovesTmp1),
+        append(ListOfMovesTmp,ListOfMovesTmp1,NewListOfMovesTmp),
+        Xprox is X + 1,
+        valid_movesAux([L1|Ls], 2, NewListOfMovesTmp, Xprox, Y, ListOfMoves)
+        ;Xprox is X + 1,
+        valid_movesAux([L1|Ls], 2, ListOfMovesTmp, Xprox, Y, ListOfMoves)).
+
+valid_movesAux([L1|Ls], Player, ListOfMovesTmp, 13, Y, ListOfMoves):-
+        Y < 13,
+        Yprox is Y + 1,
+        valid_movesAux([L1|Ls], Player, ListOfMovesTmp, 1, Yprox, ListOfMoves).
+
+valid_movesAux([L1|Ls], Player, ListOfMovesTmp, 1, 13, ListOfMoves):- append([],ListOfMovesTmp,ListOfMoves).
+
+valid_moveAux([L1|Ls], Player, ListOfMovesTmp, Xinitial, Yinitial, Xfinal, Yfinal, ListOfMoves):-
+        Xfinal < 13,
+        Yfinal < 13,
+        (legal_move(Player, [L1|Ls], Xinitial, Yinitial, Xfinal,Yfinal) ->
+        append(ListOfMovesTmp,[[Xinitial,Yinitial,Xfinal,Yfinal]],NewListOfMovesTmp),
+        Xprox is Xfinal + 1,
+        valid_moveAux([L1|Ls], Player, NewListOfMovesTmp, Xinitial, Yinitial, Xprox, Yfinal, ListOfMoves)
+        ;Xprox is Xfinal + 1,
+        valid_moveAux([L1|Ls], Player, ListOfMovesTmp, Xinitial, Yinitial, Xprox, Yfinal, ListOfMoves)).
+
+valid_moveAux([L1|Ls], Player, ListOfMovesTmp, Xinitial, Yinitial, 13, Yfinal, ListOfMoves):-
+        Yfinal < 13,
+        Yprox is Yfinal + 1,
+        valid_moveAux([L1|Ls], Player, ListOfMovesTmp, Xinitial, Yinitial, 1, Yprox, ListOfMoves).
+
+valid_moveAux([L1|Ls], Player, ListOfMovesTmp, Xinitial, Yinitial, 1, 13, ListOfMoves):- append([],ListOfMovesTmp,ListOfMoves).%:-        write(ListOfMoves),nl.
+
+choose_move(Difficulty,Board, [Move|Ls], Xinitial, Yinitial, Xfinal, Yfinal):-
+        %write(ListOfMoves),nl,
+        %random_member(Move,ListOfMoves),
+        %ESCOLHE A PRIMEIRA JOGADA POSSIVEL
+        getCoordsFromMove(Move, Xinitial,Yinitial,Xfinal,Yfinal),
+        write(Xinitial),write(Yinitial),write(Xfinal),write(Yfinal),nl.
+             
+getCoordsFromMove([Xinitial,Yinitial,Xfinal,Yfinal], Xinitial,Yinitial,Xfinal,Yfinal).
+        
+        
+
+
 %verifica se existe um baby da equipa adversaria na posicao final
 %se sim come esse baby e nao deixa um baby na posicao inicial
 %se nao existir nenhuma peca na posicao final deixa um baby na posicao inicial ao deslocar se
 %eat(Xinitial,Yinitial,Xfinal,Yfinal).
 
 %deixa um baby na posição inicial da rainha após esta se movimentar
-dropBaby(Board,X,Y,Player). %IMPORTANTE
+%dropBaby(Board,X,Y,Player). %IMPORTANTE
 
 %acaba o jogo?
-gameEnd(Rainha1, Rainha2). %IMPORTANTE
+game_over(Board, Winner). %IMPORTANTE
