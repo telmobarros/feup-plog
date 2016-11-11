@@ -15,7 +15,7 @@
                [0,0,0,0,0,0,0,0,0,0,0,0],
                [0,0,0,0,0,0,20,0,0,0,0,0]].*/
 
-/**board_initialized(Board):-
+board_initialized(Board):-
         Board=[[0,0,0,-1,0,0,0,0,0,-1,0,-1],            %estado intermédio
                [0,-1,0,-1,-1,0,0,0,-1,0,0,-6],
                [0,-1,0,0,0,0,0,0,0,0,-1,0],
@@ -27,9 +27,9 @@
                [0,0,0,0,0,0,0,0,0,0,0,0],
                [0,0,1,0,-1,0,0,0,0,0,1,0],
                [9,0,0,0,0,0,0,0,0,0,0,1],
-               [0,1,0,0,0,0,-1,0,0,0,0,0]].*/
+               [0,1,0,0,0,0,-1,0,0,0,0,0]].
 
-board_initialized(Board):-
+/**board_initialized(Board):-
      Board=[[0,0,0,0,0,0,0,0,0,0,0,0],           %estado final
            [0,0,0,0,0,0,0,0,0,0,0,0],
            [0,0,0,0,0,0,0,0,0,0,0,0],
@@ -41,7 +41,7 @@ board_initialized(Board):-
            [0,0,0,0,0,0,0,0,0,0,0,0],
            [0,0,0,0,0,0,0,0,0,0,0,0],
            [0,0,0,0,0,0,0,0,0,0,0,0],
-           [0,0,0,0,0,0,0,0,0,0,0,0]].
+           [0,0,0,0,0,0,0,0,0,0,0,0]].*/
 
 
 
@@ -206,7 +206,7 @@ getBoardLinePos([L1|Ls], X, X,PiecePlayer):- PiecePlayer is L1.
 setBoardPos([L1|Ls],X, Y, Yprox,PiecePlayer,[L1|NewLs]):-
         Yprox < Y,
         Var is Yprox + 1,
-        write('setBoardPos'),nl,
+        %write('setBoardPos'),nl,
         setBoardPos(Ls, X, Y, Var, PiecePlayer, NewLs).
 
 setBoardPos([L1|Ls], X, Y, Y,PiecePlayer ,[NewL1|Ls]):-
@@ -229,11 +229,11 @@ setBoardLinePos([L1|Ls], X, Xprox,PiecePlayer, [L1|NewLs]):-
                            write(NewLine),nl,
                            write('encontrei, vou trocar'), nl.*/
 
-setBoardLinePos([_|Ls], X, X,PiecePlayer, [PiecePlayer|Ls]):-
+setBoardLinePos([_|Ls], X, X,PiecePlayer, [PiecePlayer|Ls]).%:-
         % X > 1,
-        write(PiecePlayer),nl,
-        write(Ls),nl,
-        write('encontrei, vou trocar'), nl.
+        %write(PiecePlayer),nl,
+        %write(Ls),nl,
+        %write('encontrei, vou trocar'), nl.
 
 
 
@@ -396,7 +396,7 @@ legal_move(2, Board, Xinitial, Yinitial, Xfinal,Yfinal):-
         legal_pos(Xinitial,Yinitial), legal_pos(Xfinal,Yfinal), legal_orientation(Xinitial,Yinitial, Xfinal,Yfinal),
         getBoardPos(Board, Xinitial, Yinitial, PieceInitial),
         PieceInitial == -1,
-        write('vou ver os moves para o baby'),nl,
+        %write('vou ver os moves para o baby'),nl,
         queen_aprox(Board, 2, Xfinal, Yfinal, Xinitial, Yinitial),
         getBoardPos(Board, Xfinal, Yfinal, PieceFinal),
         PieceFinal >= 0,
@@ -537,16 +537,16 @@ getQueenLinePosAux(Player, [], Xprox, Yprox, X, Y, Value).        %:- write(X),w
 
 %verifica se a peca ao movimentar-se se se aproxima da rainha
 queen_aprox(Board, 1, Xfinal, Yfinal, Xinitial, Yinitial):-
-          write('hmmmmm'),nl,
+          %write('hmmmmm'),nl,
         getQueenPos(2, Board, Xrainha, Yrainha, Value),
         distancia(Xinitial,Yinitial,Xrainha,Yrainha,Distinitial),
         distancia(Xfinal,Yfinal,Xrainha,Yrainha,Distfinal),
         Distfinal < Distinitial.
 
 queen_aprox(Board, 2, Xfinal, Yfinal, Xinitial, Yinitial):-
-        write('hmmmmm'),nl,
+        %write('hmmmmm'),nl,
         getQueenPos(1, Board, Xrainha, Yrainha, Value),
-        write('x'),write(Xrainha),nl,
+        %write('x'),write(Xrainha),nl,
         distancia(Xinitial,Yinitial,Xrainha,Yrainha,Distinitial),
         distancia(Xfinal,Yfinal,Xrainha,Yrainha,Distfinal),
         Distfinal < Distinitial.
@@ -562,8 +562,8 @@ distancia(X,Y,Xrainha,Yrainha,Dist):-
         Dist is sqrt(Distint).
 
 valid_moves([L1|Ls], Player, ListOfMoves):-
-        valid_movesAux([L1|Ls], Player, [], 1, 1,ListOfMoves),
-        write(ListOfMoves),nl.
+        valid_movesAux([L1|Ls], Player, [], 1, 1,ListOfMoves).
+        %write(ListOfMoves),nl.
 
 
 valid_movesAux([L1|Ls], 1, ListOfMovesTmp, X, Y, ListOfMoves):-
@@ -614,12 +614,23 @@ valid_moveAux([L1|Ls], Player, ListOfMovesTmp, Xinitial, Yinitial, 13, Yfinal, L
 
 valid_moveAux([L1|Ls], Player, ListOfMovesTmp, Xinitial, Yinitial, 1, 13, ListOfMoves):- append([],ListOfMovesTmp,ListOfMoves).%:-        write(ListOfMoves),nl.
 
+%avalia todas as jogadas possiveis
+%5-Ganhar o jogo
+%4-Comer um baby sem deixar a rainha na linha de ataque
+%3-Proteger a rainha
+%2-Comer um baby e deixar a rainha na linha de ataque
+%1-Não comer um baby e deixar a rainha na linha de ataque
+%value
+
+
+
+
 choose_move(Difficulty,Board, [Move|Ls], Xinitial, Yinitial, Xfinal, Yfinal):-
         %write(ListOfMoves),nl,
         %random_member(Move,ListOfMoves),
         %ESCOLHE A PRIMEIRA JOGADA POSSIVEL
-        getCoordsFromMove(Move, Xinitial,Yinitial,Xfinal,Yfinal),
-        write(Xinitial),write(Yinitial),write(Xfinal),write(Yfinal),nl.
+        getCoordsFromMove(Move, Xinitial,Yinitial,Xfinal,Yfinal).
+        %write(Xinitial),write(Yinitial),write(Xfinal),write(Yfinal),nl.
 
 getCoordsFromMove([Xinitial,Yinitial,Xfinal,Yfinal], Xinitial,Yinitial,Xfinal,Yfinal).
 
