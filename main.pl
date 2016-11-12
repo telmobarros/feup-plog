@@ -1,7 +1,6 @@
 :-include('interface.pl').
 :-include('bot.pl').
 :-include('logic.pl').
-:-include(library(random)).
 
 monkey_queen:- 
         repeat,
@@ -37,6 +36,10 @@ play_turn(Board, NewBoard, CurPlayer, 0, Difficulty) :-
 
 play_turn(Board, NewBoard, CurPlayer, 1, Difficulty) :-
         valid_moves(Board, CurPlayer, ListOfMoves),
+        write('ListofMoves'),nl,
+        write(ListOfMoves),nl,
+        write('entrar em value_moves'),nl,
         value_moves(Board, CurPlayer, ListOfMoves, ListOfValues),
-        choose_move(Difficulty, ListOfMoves, ListOfValues, Xinitial, Yinitial, Xfinal, Yfinal).%,    
-        %move(CurPlayer, Board, Xinitial, Yinitial, Xfinal, Yfinal, NewBoard).
+        write('value_moves sair'),nl,
+        once(choose_move(Difficulty, ListOfMoves, ListOfValues, Xinitial, Yinitial, Xfinal, Yfinal)),  
+        move(CurPlayer, Board, Xinitial, Yinitial, Xfinal, Yfinal, NewBoard).

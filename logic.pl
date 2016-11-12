@@ -51,15 +51,18 @@ switchPlayer(2, NewPlayer, NewPlayerType, Player1Type, Player2Type) :-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %Retorna a peça que se encontra na posicao X, Y de um tabuleiro
-getBoardPos([L1|Ls],X, Y, PiecePlayer):- getBoardPos([L1|Ls],X, Y, 1, PiecePlayer).
+getBoardPos([L1|Ls],X, Y, PiecePlayer):- 
+        getBoardPos([L1|Ls],X, Y, 1, PiecePlayer).
 
 getBoardPos([L1|Ls],X, Y, Yprox,PiecePlayer):-
         Yprox < Y,
         Var is Yprox + 1,
         getBoardPos(Ls, X, Y, Var, PiecePlayer).
 
-getBoardPos([L1|Ls], X, Y, Y,PiecePlayer):- getBoardLinePos(L1, X, 1,PiecePlayer).
+getBoardPos([L1|Ls], X, Y, Y,PiecePlayer):- 
+        getBoardLinePos(L1, X, 1,PiecePlayer).
 
+getBoardPos([],X, Y, Yprox,PiecePlayer).
 
 %Retorna a peça que se encontra na posicao X de uma linha
 getBoardLinePos([L1|Ls], X,PiecePlayer):- getBoardLinePos([L1|Ls], X, 1,PiecePlayer).
@@ -78,7 +81,6 @@ getBoardLinePos([L1|Ls], X, X,PiecePlayer):- PiecePlayer is L1.
 setBoardPos([L1|Ls],X, Y, Yprox,PiecePlayer,[L1|NewLs]):-
         Yprox < Y,
         Var is Yprox + 1,
-        %write('setBoardPos'),nl,
         setBoardPos(Ls, X, Y, Var, PiecePlayer, NewLs).
 
 setBoardPos([L1|Ls], X, Y, Y,PiecePlayer ,[NewL1|Ls]):-
@@ -95,17 +97,10 @@ setBoardLinePos([L1|Ls], X, Xprox,PiecePlayer, [L1|NewLs]):-
 
 
 /*setBoardLinePos([L1|Ls], 1, 1,PiecePlayer, [[]|NewLine]):-
-                           write(PiecePlayer),nl,
-                           write(Ls),nl,
                            append([PiecePlayer],Ls,NewLine),
-                           write(NewLine),nl,
-                           write('encontrei, vou trocar'), nl.*/
-
+*/
 setBoardLinePos([_|Ls], X, X,PiecePlayer, [PiecePlayer|Ls]).%:-
 % X > 1,
-%write(PiecePlayer),nl,
-%write(Ls),nl,
-%write('encontrei, vou trocar'), nl.
 
 
 
@@ -268,7 +263,6 @@ legal_move(2, Board, Xinitial, Yinitial, Xfinal,Yfinal):-
         legal_pos(Xinitial,Yinitial), legal_pos(Xfinal,Yfinal), legal_orientation(Xinitial,Yinitial, Xfinal,Yfinal),
         getBoardPos(Board, Xinitial, Yinitial, PieceInitial),
         PieceInitial == -1,
-        %write('vou ver os moves para o baby'),nl,
         queen_aprox(Board, 2, Xfinal, Yfinal, Xinitial, Yinitial),
         getBoardPos(Board, Xfinal, Yfinal, PieceFinal),
         PieceFinal >= 0,
@@ -408,16 +402,13 @@ getQueenLinePosAux(Player, [], Xprox, Yprox, X, Y, Value).        %:- write(X),w
 
 %verifica se a peca ao movimentar-se se se aproxima da rainha
 queen_aprox(Board, 1, Xfinal, Yfinal, Xinitial, Yinitial):-
-        %write('hmmmmm'),nl,
         getQueenPos(2, Board, Xrainha, Yrainha, Value),
         distancia(Xinitial,Yinitial,Xrainha,Yrainha,Distinitial),
         distancia(Xfinal,Yfinal,Xrainha,Yrainha,Distfinal),
         Distfinal < Distinitial.
 
 queen_aprox(Board, 2, Xfinal, Yfinal, Xinitial, Yinitial):-
-        %write('hmmmmm'),nl,
         getQueenPos(1, Board, Xrainha, Yrainha, Value),
-        %write('x'),write(Xrainha),nl,
         distancia(Xinitial,Yinitial,Xrainha,Yrainha,Distinitial),
         distancia(Xfinal,Yfinal,Xrainha,Yrainha,Distfinal),
         Distfinal < Distinitial.
@@ -551,7 +542,7 @@ value(PreviousBoard, Board, 2, Value):-
 
 %cria lista com valores de uma lista de jogadas
 value_moves(Board, CurPlayer, [Move|Ms], [Value|Vs]):-
-        getCoordsFromMove(Move, Xinitial,Yinitial,Xfinal,Yfinal),
+        getCoordsFromMove(Move, Xinitial,Yinitial,Xfinal,Yfinal,0),
         move(CurPlayer, Board, Xinitial, Yinitial, Xfinal, Yfinal, NewBoard),
         value(Board, NewBoard, CurPlayer, Value),
         value_moves(Board, CurPlayer, Ms, Vs).
@@ -632,21 +623,15 @@ maxAux([V1|Vs], MaxValueTmp, MaxValue):-
 
 maxAux([], MaxValueTmp, MaxValueTmp).
 
-getCoordsFromMove([Xinitial,Yinitial,Xfinal,Yfinal], Xinitial,Yinitial,Xfinal,Yfinal).
-
-
-/*getCoordsFromMove([L1|Ls], Xinitial,Yinitial,Xfinal,Yfinal):-
-        getCoordsFromMove([L1|Ls], Xinitial,Yinitial,Xfinal,Yfinal,0).
-
 
 getCoordsFromMove([L1|Ls], Xinitial,Yinitial,Xfinal,Yfinal,Xvar):-
-        Xvar < 4,
         getCoordsFromMoveAux([L1|Ls],Xinitial,Yinitial,Xfinal,Yfinal,Xvar),
         Xvartmp is Xvar +1,
         getCoordsFromMove(Ls, Xinitial,Yinitial,Xfinal,Yfinal,Xvartmp).
 
 
 getCoordsFromMove([], Xinitial,Yinitial,Xfinal,Yfinal,Xvar).
+
 
 %Xinitial
 getCoordsFromMoveAux([L1|Ls], Xinitial,Yinitial,Xfinal,Yfinal,Xvar):-
@@ -663,11 +648,10 @@ getCoordsFromMoveAux([L1|Ls], Xinitial,Yinitial,Xfinal,Yfinal,Xvar):-
         Xvar == 2,
         Xfinal is L1.
 
-%Yfinal
+        %Yfinal
 getCoordsFromMoveAux([L1|Ls], Xinitial,Yinitial,Xfinal,Yfinal,Xvar):-
         Xvar == 3,
-        Yfinal is L1.*/
-       
+        Yfinal is L1.
 
 
 %verifica se existe um baby da equipa adversaria na posicao final
