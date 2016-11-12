@@ -1,35 +1,9 @@
+:-include(library(random)).
+
 board_initialized(Board):-
-        Board=[[0,0,0,0,0,-20,0,0,0,0,0,0],          %estado inicial
-               [0,0,0,0,0,0,0,0,0,0,0,0],
-               [0,0,0,0,0,0,0,0,0,0,0,0],
-               [0,0,0,0,0,0,0,0,0,0,0,0],
-               [0,0,0,0,0,0,0,0,0,0,0,0],
-               [0,0,0,0,0,0,0,0,0,0,0,0],
-               [0,0,0,0,0,0,0,0,0,0,0,0],
-               [0,0,0,0,0,0,0,0,0,0,0,0],
-               [0,0,0,0,0,0,0,0,0,0,0,0],
-               [0,0,0,0,0,0,0,0,0,0,0,0],
-               [0,0,0,0,0,0,0,0,0,0,0,0],
-               [0,0,0,0,0,0,20,0,0,0,0,0]].
-
-/*board_initialized2(NBoard):-
-        NBoard=[[0,0,0,0,0,0,-1,0,0,0,0,0],          %estado inicial
-               [0,0,0,0,0,0,0,0,0,0,0,0],
-               [0,0,0,0,0,0,0,19,0,0,0,0],
-               [0,0,0,-19,0,0,0,0,0,0,0,0],
-               [0,0,0,0,0,0,0,0,0,0,0,0],
-               [0,0,0,0,0,0,0,0,0,0,0,0],
-               [0,0,0,0,0,0,0,0,0,0,0,0],
-               [0,0,0,0,0,0,0,0,0,0,0,0],
-               [0,0,0,0,0,0,0,0,0,0,0,0],
-               [0,0,0,0,0,0,0,0,0,0,0,0],
-               [0,0,0,0,0,0,0,0,0,0,0,0],
-               [0,0,0,0,0,0,1,0,0,0,0,0]].*/
-
-/*board_initialized(Board):-
-        Board=[[0,0,0,-1,0,0,0,0,0,-1,0,-1],            %estado intermédio
-               [0,-1,0,-1,-1,0,0,0,-1,0,0,-6],
-               [0,-1,0,0,0,0,0,0,0,0,-1,0],
+        Board=[[0,0,0,-1,0,0,0,0,0,-1,-1,-1],            %estado intermédio
+               [0,-1,0,-1,-1,0,0,0,-1,-1,-1,-6],
+               [0,-1,0,0,0,0,0,0,0,0,-1,-1],
                [0,0,0,0,1,0,0,0,1,0,0,0],
                [0,0,0,0,0,0,0,0,0,0,0,0],
                [0,0,0,0,0,0,0,0,0,0,0,0],
@@ -38,24 +12,7 @@ board_initialized(Board):-
                [0,0,0,0,0,0,0,0,0,0,0,0],
                [0,0,1,0,-1,0,0,0,0,0,1,0],
                [9,0,0,0,0,0,0,0,0,0,0,1],
-               [0,1,0,0,0,0,-1,0,0,0,0,0]].*/
-
-/**board_initialized(Board):-
-     Board=[[0,0,0,0,0,0,0,0,0,0,0,0],           %estado final
-           [0,0,0,0,0,0,0,0,0,0,0,0],
-           [0,0,0,0,0,0,0,0,0,0,0,0],
-           [0,0,0,0,0,0,0,0,0,-1,0,0],
-           [0,0,0,0,0,0,0,0,0,0,0,0],
-           [0,0,0,0,0,0,0,0,0,0,0,0],
-           [0,0,0,0,0,0,0,0,2,0,0,0],
-           [0,0,0,0,0,-2,0,0,0,0,0,0],
-           [0,0,0,0,0,0,0,0,0,0,0,0],
-           [0,0,0,0,0,0,0,0,0,0,0,0],
-           [0,0,0,0,0,0,0,0,0,0,0,0],
-           [0,0,0,0,0,0,0,0,0,0,0,0]].*/
-
-
-
+               [0,1,0,0,0,0,-1,0,0,0,0,0]].
 
 
 
@@ -552,6 +509,7 @@ value(PreviousBoard, Board, 2, Value):-
         Count < PreviousCount,
         Value is 4.
 
+
 value(PreviousBoard, Board, 1, Value):-
         isQueenProtected(1, Board),
         once(countBoardPieces(PreviousBoard, 2, PreviousCount)),
@@ -590,6 +548,8 @@ value(PreviousBoard, Board, 2, Value):-
         Count == PreviousCount,
         Value is 1.
 
+
+%getCoordsFromMove([Xinitial,Yinitial,Xfinal,Yfinal], Xinitial,Yinitial,Xfinal,Yfinal).
 %cria lista com valores de uma lista de jogadas
 value_moves(Board, CurPlayer, [Move|Ms], [Value|Vs]):-
         getCoordsFromMove(Move, Xinitial,Yinitial,Xfinal,Yfinal),
@@ -613,6 +573,10 @@ countBoardPieces([L1|Ls], Player, Count):-
 
 countBoardPieces([], Player, 0).
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 countBoardPiecesLine([L1|Ls], 1, Count):-
         L1 > 0,
         countBoardPiecesLine(Ls, 1, CountTmp),
@@ -656,9 +620,194 @@ isQueenProtectedLineAux([L1|Ls], X, Y, Xqueen, Yqueen, ValueQueen):-
 isQueenProtectedLineAux([], X, Y, Xqueen, Yqueen, ValueQueen).
 
 
+getCoordsFromMove([L1|Ls], Xinitial,Yinitial,Xfinal,Yfinal):-
+        getCoordsFromMove([L1|Ls], Xinitial,Yinitial,Xfinal,Yfinal,0).
 
 
-getCoordsFromMove([Xinitial,Yinitial,Xfinal,Yfinal], Xinitial,Yinitial,Xfinal,Yfinal).
+getCoordsFromMove([L1|Ls], Xinitial,Yinitial,Xfinal,Yfinal,Xvar):-
+        Xvar < 4,
+        getCoordsFromMoveAux([L1|Ls],Xinitial,Yinitial,Xfinal,Yfinal,Xvar),
+        Xvartmp is Xvar +1,
+        getCoordsFromMove(Ls, Xinitial,Yinitial,Xfinal,Yfinal,Xvartmp).
+
+
+getCoordsFromMove([], Xinitial,Yinitial,Xfinal,Yfinal,Xvar).
+
+%Xinitial
+getCoordsFromMoveAux([L1|Ls], Xinitial,Yinitial,Xfinal,Yfinal,Xvar):-
+        Xvar == 0,
+        Xinitial is L1.
+
+%Yinitial
+getCoordsFromMoveAux([L1|Ls], Xinitial,Yinitial,Xfinal,Yfinal,Xvar):-
+        Xvar == 1,
+        Yinitial is L1.
+
+%Xfinal
+getCoordsFromMoveAux([L1|Ls], Xinitial,Yinitial,Xfinal,Yfinal,Xvar):-
+        Xvar == 2,
+        Xfinal is L1.
+
+%Yfinal
+getCoordsFromMoveAux([L1|Ls], Xinitial,Yinitial,Xfinal,Yfinal,Xvar):-
+        Xvar == 3,
+        Yfinal is L1.
+
+
+%isValue retorna true se um dos MaxValue for 1,2,3,4,5
+
+
+        
+/*
+max([L1|Ls],MaxValue,5):-
+        write('vou ver para o MaxValue 5'),nl,
+        maxAux([L1|Ls],MaxValue,5),
+        MaxValue == 5.
+
+max([L1|Ls],MaxValue):-
+        write('vou ver para o MaxValue 4'),nl,
+        maxAux([L1|Ls],MaxValue,4),
+        MaxValue == 4.
+
+max([L1|Ls],MaxValue):-
+        write('vou ver para o MaxValue 3'),nl,
+        maxAux([L1|Ls],MaxValue,3),
+        MaxValue == 3.
+
+
+max([L1|Ls],MaxValue):-
+        write('vou ver para o MaxValue 2'),nl,
+        maxAux([L1|Ls],MaxValue,2),
+        MaxValue == 2.
+
+max([L1|Ls],MaxValue):-
+        write('vou ver para o MaxValue 1'),nl,
+        maxAux([L1|Ls],MaxValue,1),
+        MaxValue == 1.
+
+%max(ListOfValues,MaxValue)
+max([L1|Ls],MaxValue):-
+        max([L1|Ls],MaxValue,5).
+
+max([L1|Ls],MaxValue,X):-
+        write('tenta encontrar o '),write(X),nl,
+        maxAux([L1|Ls],MaxValue,5),
+        write('MaxValue '),write(MaxValue),nl,
+        MaxValue == 5,
+        write('Encontrei'),nl.
+
+max([L1|Ls],MaxValue,X):-
+        X > 0,
+       maxAux([L1|Ls],MaxValue,X),
+        write('MaxValue '),write(MaxValue),nl,
+        MaxValue == 0,
+        Xvar is X -1,
+        max([L1|Ls],MaxValue,Xvar).
+
+max([L1|Ls],X,X).
+      
+/*max([L1|Ls],MaxValue):-
+        write('tenta encontrar o 5'),nl,
+        once(maxAux([L1|Ls],MaxValue,5)),
+        write('MaxValue '),write(MaxValue),nl.
+
+        
+maxAux([L1|Ls],MaxValue,X):-
+        write('found '),write(X),nl,
+        L1 == X ->
+        MaxValue is X.
+
+maxAux([L1|Ls],MaxValue,X):-
+        maxAux(Ls,MaxValue,X).
+
+maxAux([],MaxValue,X).*/
+
+
+
+
+
+max([L1|Ls], MaxValue):-
+        max([L1|Ls], MaxValue,5).
+
+
+max([L1|Ls],MaxValue,Xvar):-
+        Xvar > 0,
+        maxAux([L1|Ls],MaxValue,Xvar),
+        Xvartmp is Xvar -1,
+        max(Ls,MaxValue,Xvartmp).
+
+
+max([], MaxValue,Xvar).
+
+%Xinitial
+maxAux([L1|Ls], MaxValue,Xvar):-
+        Xvar == 5,
+        L1 == 5,
+        MaxValue is 5.
+
+
+maxAux([L1|Ls], MaxValue,Xvar):-
+        Xvar == 4,
+        L1 == 4,
+        MaxValue is 4.
+
+
+maxAux([L1|Ls], MaxValue,Xvar):-
+        Xvar == 3,
+        L1 == 3,
+        MaxValue is 3.
+
+
+maxAux([L1|Ls], MaxValue,Xvar):-
+        Xvar == 2,
+        L1 == 2,
+        MaxValue is 2.
+
+
+maxAux([L1|Ls], MaxValue,Xvar):-
+        Xvar == 1,
+        L1 == 1,
+        MaxValue is 1.
+       
+
+%choose_move(+Difficulty, +ListOfMoves, +ListOfValues, -Xinitial, -Yinitial, -Xfinal, -Yfinal).
+choose_move(Difficulty, ListOfMoves, ListOfValues, Xinitial, Yinitial, Xfinal, Yfinal):-
+        write('hmmmm'),nl,
+        %ESTE É O CASO QUE CORRE sempre se houver uma jogada de nivel 5 porque todos fazem essa jogada se for possivel
+        write('ListofValues'),nl,
+        write(ListOfValues),nl,
+        max(ListOfValues,MaxValue),
+        write('sai do max MaxValue  '),write(MaxValue),nl,
+        MaxValue == 5,
+        getMoveWithValue(ListOfMoves, ListOfValues, Value, Xinitial, Yinitial, Xfinal, Yfinal).
+
+/**choose_move(Difficulty, ListOfMoves, ListOfValues, Xinitial, Yinitial, Xfinal, Yfinal):-
+        %se não houver uma jogada de nivel 5 vai sortear o numero depois em baixo esta uma
+        %funcao que pensei que pode retornar o valor da jogaDA CONSOANTE O random que sair
+        random(0, 100, Random),
+        getValue(Difficulty, Random, Value),
+        getMoveWithValue(ListOfMoves, ListOfValues, Value, Xinitial, Yinitial, Xfinal, Yfinal).*/
+
+%getValue(1, Random, Value):-Random =< 40, Value is  1.
+%getValue(1, Random, Value):-Random =< 70, Value is  2.
+%getValue(1, Random, Value):-Random =< 90, Value is  3.
+%getValue(1, Random, Value):-Random =< 100, Value is  4.
+
+%getValue(2, Random, Value):-Random =< 20, Value is  1.
+%getValue(2, Random, Value):-Random =< 50, Value is  2.
+%getValue(2, Random, Value):-Random =< 80, Value is  3.
+%getValue(2, Random, Value):-Random =< 100, Value is  4.
+
+
+%getValue(3, Random, Value):-Random =< 10, Value is  1.
+%getValue(3, Random, Value):-Random =< 30, Value is  2.
+%getValue(3, Random, Value):-Random =< 60, Value is  3.
+%getValue(3, Random, Value):-Random =< 100, Value is  4.
+
+
+%sempre que a dificuldade for 4 independemente do random ele ia escolher o valor maximo possivel
+%getValue(4, Random, Value):- max(ListOfValues,Value). 
+
 
 
 

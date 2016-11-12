@@ -36,12 +36,6 @@ play_turn(Board, NewBoard, CurPlayer, 0, Difficulty) :-
 
 play_turn(Board, NewBoard, CurPlayer, 1, Difficulty) :-
         valid_moves(Board, CurPlayer, ListOfMoves),
-        write(ListOfMoves),nl,
         value_moves(Board, CurPlayer, ListOfMoves, ListOfValues),
-        write(ListOfValues),nl,
-        length(ListOfMoves,Len1),
-        write(Len1),nl,
-        length(ListOfValues,Len2),
-        write(Len2),nl,
         choose_move(Difficulty, ListOfMoves, ListOfValues, Xinitial, Yinitial, Xfinal, Yfinal),    
         move(CurPlayer, Board, Xinitial, Yinitial, Xfinal, Yfinal, NewBoard).
