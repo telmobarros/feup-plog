@@ -2,101 +2,92 @@
 %choose_move(+Difficulty, +ListOfMoves, +ListOfValues, -Xinitial, -Yinitial, -Xfinal, -Yfinal).
 choose_move(Difficulty, ListOfMoves, ListOfValues, Xinitial, Yinitial, Xfinal, Yfinal):-
         %ESTE É O CASO QUE CORRE sempre se houver uma jogada de nivel 5 porque todos fazem essa jogada se for possivel
-        write('ListofValues'),write(ListOfValues),nl,
         max(ListOfValues,MaxValue),
-        write('sai do max MaxValue  '),write(MaxValue),nl,
         MaxValue == 5,
-        write('vou crashar'),nl,
-        getMoveWithValue(ListOfMoves, ListOfValues, Value, Xinitial, Yinitial, Xfinal, Yfinal),
-        write('Xinitial'),write(Xinitial),nl,
-        write('Yinitial'),write(Yinitial),nl,
-        write('Xfinal'),write(Xfinal),nl,
-        write('Yfinal'),write(Yfinal),nl.
+        once(getMoveWithValue(ListOfMoves, ListOfValues, MaxValue, Xinitial, Yinitial, Xfinal, Yfinal)).
 
 choose_move(Difficulty, ListOfMoves, ListOfValues, Xinitial, Yinitial, Xfinal, Yfinal):-
         %se não houver uma jogada de nivel 5 vai sortear o numero depois em baixo esta uma
         %funcao que pensei que pode retornar o valor da jogaDA CONSOANTE O random que sair
-        write('NÃO HAVIA MOVES TIPO 5 POR ISSO VOU ESCOLHER OUTRO'),nl,
-        random(0, 100, Random),
-        write('Random '),write(Random),nl,
-        once(getValue(Difficulty, Random, Value)),
-        getMoveWithValue(ListOfMoves, ListOfValues, Value, Xinitial, Yinitial, Xfinal, Yfinal),
-        write('Xinitial'),write(Xinitial),nl,
-        write('Yinitial'),write(Yinitial),nl,
-        write('Xfinal'),write(Xfinal),nl,
-        write('Yfinal'),write(Yfinal),nl.
+        max(ListOfValues,MaxValue),
+        MaxValue \== 5,
+        once(getValue(Difficulty,Value,ListOfValues)),
+        once(getMoveWithValue(ListOfMoves, ListOfValues, Value, Xinitial, Yinitial, Xfinal, Yfinal)).
+       
 
-getValue(1, Random, Value):-
-        Random =< 40,
-        Value is  1,
-        write('Value1'),write(Value),nl.
+choose_move(4, ListOfMoves, ListOfValues, Xinitial, Yinitial, Xfinal, Yfinal):-
+        %ESTE É O CASO QUE CORRE sempre se houver uma jogada de nivel 5 porque todos fazem essa jogada se for possivel
+        max(ListOfValues,MaxValue),
+        once(getMoveWithValue(ListOfMoves, ListOfValues, MaxValue, Xinitial, Yinitial, Xfinal, Yfinal)).
 
-getValue(1, Random, Value):-
-        Random =< 70,
-        Random > 40,
-        Value is  2,
-        write('Value1'),write(Value),nl.
+            
 
-getValue(1, Random, Value):-
-        Random =< 90, 
-        Random > 70,
-        Value is  3,
-        write('Value1'),write(Value),nl.
+getValue(1,Value,ListOfValues):-
+        getValue(1,Value).
 
-getValue(1, Random, Value):-
-        Random > 90,
-        Random =< 100,
-        Value is  4,
-        write('Value1'),write(Value),nl.
+getValue(2,Value,ListOfValues):-
+        getValue(2,Value).
+getValue(3,Value,ListOfValues):-
+        getValue(3,Value).
 
 
-
-
-
-getValue(2, Random, Value):-
-        Random =< 20,
-        Value is  1,
-        write('Value1'),write(Value),nl.
-
-getValue(2, Random, Value):-
-        Random =< 50,
-        Random > 20,
-        Value is  2,
-        write('Value1'),write(Value),nl.
-
-getValue(2, Random, Value):-
-        Random =< 80, 
-        Random > 50,
-        Value is  3,
-        write('Value1'),write(Value),nl.
-
-getValue(2, Random, Value):-
-        Random > 80,
-        Random =< 100,
-        Value is  4,
-        write('Value1'),write(Value),nl.
-
-
-getValue(3, Random, Value):-
-        Random =< 10,
+getValue(1, Value):-
+        maybe(30/100),
         Value is  1.
 
-getValue(3, Random, Value):-
-        Random =< 30, 
-        Random > 10,
+getValue(1, Value):-
+        maybe(30/100),
         Value is  2.
-getValue(3, Random, Value):-
-        Random =< 60, 
-        Random > 30,
+
+getValue(1, Value):-
+        maybe(20/100),
         Value is  3.
-getValue(3, Random, Value):-
-        Random =< 100,
-        Random > 60,
+
+getValue(1, Value):-
+        maybe(20/100),
+        Value is  4.
+
+
+
+
+getValue(2, Value):-
+        maybe(20/100),
+        Value is  1.
+
+getValue(2, Value):-
+        maybe(20/100),
+        Value is  2.
+
+getValue(2, Value):-
+        maybe(30/100),
+        Value is  3.
+
+getValue(2,Value):-
+       maybe(30/100),
+        Value is  4.
+
+
+
+
+getValue(3, Value):-
+        maybe(10/100),
+        Value is  1.
+
+getValue(3, Value):-
+        maybe(10/100),
+        Value is  2.
+
+getValue(3, Value):-
+        maybe(30/100),
+        Value is  3.
+
+getValue(3, Value):-
+        maybe(50/100),
         Value is  4.
 
 
 %sempre que a dificuldade for 4 independemente do random ele ia escolher o valor maximo possivel
-getValue(4, Random, Value):-
+getValue(4, Value, ListOfValues):-
         max(ListOfValues,V),
         Value is V.
 
@@ -105,20 +96,15 @@ getValue(4, Random, Value):-
 
 
 getMoveWithValue([L1|Ls], [V1|Vs], Value, Xinitial, Yinitial, Xfinal, Yfinal):-
-        write('hmmmmmm1111'),nl,
         V1 == Value,
-        write('found'),nl,
-        write('L1'),nl, write(L1),nl,
-        getCoordsFromMove(L1, Xinitial,Yinitial,Xfinal,Yfinal,0),
-        write('Xinitial 2  '),write(Xinitial),nl,
-        write('Yinitial 2  '),write(Yinitial),nl,
-        write('Xfinal 2  '),write(Xfinal),nl,
-        write('Yfinal 2  '),write(Yfinal),nl.
+        write(L1),nl,
+        getCoordsFromMove(L1, Xinitial,Yinitial,Xfinal,Yfinal,0).
 
 getMoveWithValue([L1|Ls], [V1|Vs], Value, Xinitial, Yinitial, Xfinal, Yfinal):-
-        write('recursivo'),nl,
         getMoveWithValue(Ls, Vs, Value, Xinitial, Yinitial, Xfinal, Yfinal).
 
+getMoveWithValue([], [], Value, Xinitial, Yinitial, Xfinal, Yfinal):-
+        write('done'),nl.
 
 /*      
    max(ListOfValues, MaxValue):-

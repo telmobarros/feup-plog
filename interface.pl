@@ -1,5 +1,5 @@
 display_board([L1|Ls]):-
-        write('  1    2    3    4    5    6    7    8    9    10   11   12'), nl,        %imprime cabeçalho com letras das colunas
+        write('   1    2    3    4    5    6    7    8    9    10   11   12'), nl,        %imprime cabeçalho com letras das colunas
         write('-------------------------------------------------------------'), nl,     %imprime separador das linhas
         display_lines([L1|Ls], 1).
 
@@ -78,7 +78,7 @@ readComputerDifficulty(Mode, Difficulty) :-
         write('Computer Difficulty'), nl,
         write('1 -> Easy'), nl,
         write('2 -> Medium'), nl,
-        write('3 -> Easy'), nl,
+        write('3 -> Hard'), nl,
         write('4 -> Expert'), nl,
         write('Difficulty: '), read(Difficulty),
         Difficulty >= 1, Difficulty =< 4.

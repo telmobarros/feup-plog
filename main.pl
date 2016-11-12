@@ -27,19 +27,44 @@ play_game(Board, Player1Type, Player2Type, CurPlayer, CurPlayerType, Difficulty)
         game_over(Board,Winner),
         write('PLAYER '), write(Winner), write(' WINS!'),nl.
 
+
+
 play_turn(Board, NewBoard, CurPlayer, 0, Difficulty) :-
         repeat,
         once(readMove(Xinitial, Yinitial, Xfinal, Yfinal)),
         legal_move(CurPlayer, Board, Xinitial, Yinitial, Xfinal, Yfinal),
-        move(CurPlayer, Board, Xinitial, Yinitial, Xfinal, Yfinal, NewBoard).
+        move(CurPlayer, Board, Xinitial, Yinitial, Xfinal, Yfinal, NewBoard),
+        write('best play'),nl.
+        %once(display_mssg_best_play(Board,CurPlayer,Xinitial, Yinitial, Xfinal, Yfinal)).
 
 
 play_turn(Board, NewBoard, CurPlayer, 1, Difficulty) :-
         valid_moves(Board, CurPlayer, ListOfMoves),
-        write('ListofMoves'),nl,
-        write(ListOfMoves),nl,
-        write('entrar em value_moves'),nl,
         value_moves(Board, CurPlayer, ListOfMoves, ListOfValues),
-        write('value_moves sair'),nl,
         once(choose_move(Difficulty, ListOfMoves, ListOfValues, Xinitial, Yinitial, Xfinal, Yfinal)),  
         move(CurPlayer, Board, Xinitial, Yinitial, Xfinal, Yfinal, NewBoard).
+
+display_mssg_best_play(Board,CurPlayer,Xinitial, Yinitial, Xfinal, Yfinal):-
+       once(valid_moves(Board, CurPlayer, ListOfMoves)),
+        once(value_moves(Board, CurPlayer, ListOfMoves, ListOfValues)),
+        once(choose_move(4, ListOfMoves, ListOfValues, Xinitialcp, Yinitialcp, Xfinalcp, Yfinalcp)),
+        Xinitial == Xinitialcp,
+        Yinitial == Yinitialcp,
+        Xfinal == Xfinalcp,
+        Yfinal == Yfinalcp,
+        write('The best play was choosen'),nl.
+
+display_mssg_best_play(Board,CurPlayer,Xinitial, Yinitial, Xfinal, Yfinal):-
+        valid_moves(Board, CurPlayer, ListOfMoves),
+        value_moves(Board, CurPlayer, ListOfMoves, ListOfValues),
+        once(choose_move(4, ListOfMoves, ListOfValues, Xinitialcp, Yinitialcp, Xfinalcp, Yfinalcp)),
+        Xinitial \== Xinitialcp,
+        Yinitial \== Yinitialcp,
+        Xfinal \== Xfinalcp,
+        Yfinal \== Yfinalcp,
+        write('The best play was: '),nl,
+        write('Xinitial: '), write(Xinitialcp),nl,
+        write('Yinitial: '), write(Yinitialcp),nl,
+        write('Xfinal: '), write(Xfinalcp),nl,
+        write('Yfinal: '), write(Yfinalcp),nl.
+

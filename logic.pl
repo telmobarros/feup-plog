@@ -1,18 +1,18 @@
 
 
 board_initialized(Board):-
-        Board=[[0,0,0,-1,0,0,0,0,0,-1,-1,-1],            %estado intermédio
-               [0,-1,0,-1,-1,0,0,0,-1,-1,-1,-6],
-               [0,-1,0,0,0,0,0,0,0,0,-1,-1],
-               [0,0,0,0,1,0,0,0,1,0,0,0],
+        Board=[[0,0,0,0,0,-20,0,0,0,0,0,0],            %estado intermédio
                [0,0,0,0,0,0,0,0,0,0,0,0],
                [0,0,0,0,0,0,0,0,0,0,0,0],
                [0,0,0,0,0,0,0,0,0,0,0,0],
                [0,0,0,0,0,0,0,0,0,0,0,0],
                [0,0,0,0,0,0,0,0,0,0,0,0],
-               [0,0,1,0,-1,0,0,0,0,0,1,0],
-               [9,0,0,0,0,0,0,0,0,0,0,1],
-               [0,1,0,0,0,0,-1,0,0,0,0,0]].
+               [0,0,0,0,0,0,0,0,0,0,0,0],
+               [0,0,0,0,0,0,0,0,0,0,0,0],
+               [0,0,0,0,0,0,0,0,0,0,0,0],
+               [0,0,0,0,0,0,0,0,0,0,0,0],
+               [0,0,0,0,0,0,0,0,0,0,0,0],
+               [0,0,0,0,0,0,20,0,0,0,0,0]].
 
 
 
@@ -218,14 +218,16 @@ empty_cells(Board, X, Y, X, Y).
 %verifica se as casas entre a posicao inicial e a posicao final estao livres
 %legal_move(+Player, +Board, +Xinitial, +Yinitial, +Xfinal, -PieceInitial, -PieceFinal)
 legal_move(1, Board, Xinitial, Yinitial, Xfinal,Yfinal):-
-        legal_pos(Xinitial,Yinitial), legal_pos(Xfinal,Yfinal), legal_orientation(Xinitial,Yinitial, Xfinal,Yfinal),
+        legal_orientation(Xinitial,Yinitial, Xfinal,Yfinal),
         getBoardPos(Board, Xinitial, Yinitial, PieceInitial),
         PieceInitial > 2,
         getBoardPos(Board, Xfinal, Yfinal, PieceFinal),
         PieceFinal =< 0,
         empty_cells(Board,Xinitial, Yinitial, Xfinal, Yfinal).
+
 legal_move(1, Board, Xinitial, Yinitial, Xfinal,Yfinal):-
-        legal_pos(Xinitial,Yinitial), legal_pos(Xfinal,Yfinal), legal_orientation(Xinitial,Yinitial, Xfinal,Yfinal),
+        legal_pos(Xinitial,Yinitial), legal_pos(Xfinal,Yfinal),
+        legal_orientation(Xinitial,Yinitial, Xfinal,Yfinal),
         getBoardPos(Board, Xinitial, Yinitial, PieceInitial),
         PieceInitial == 2,
         getBoardPos(Board, Xfinal, Yfinal, PieceFinal),
@@ -234,7 +236,8 @@ legal_move(1, Board, Xinitial, Yinitial, Xfinal,Yfinal):-
 
 %move para o baby do player 1
 legal_move(1, Board, Xinitial, Yinitial, Xfinal,Yfinal):-
-        legal_pos(Xinitial,Yinitial), legal_pos(Xfinal,Yfinal), legal_orientation(Xinitial,Yinitial, Xfinal,Yfinal),
+        legal_pos(Xinitial,Yinitial), legal_pos(Xfinal,Yfinal),
+        legal_orientation(Xinitial,Yinitial, Xfinal,Yfinal),
         getBoardPos(Board, Xinitial, Yinitial, PieceInitial),
         PieceInitial == 1,
         queen_aprox(Board, 1, Xfinal, Yfinal, Xinitial, Yinitial),
@@ -243,7 +246,8 @@ legal_move(1, Board, Xinitial, Yinitial, Xfinal,Yfinal):-
         empty_cells(Board,Xinitial, Yinitial, Xfinal, Yfinal).
 
 legal_move(2, Board, Xinitial, Yinitial, Xfinal,Yfinal):-
-        legal_pos(Xinitial,Yinitial), legal_pos(Xfinal,Yfinal), legal_orientation(Xinitial,Yinitial, Xfinal,Yfinal),
+        legal_pos(Xinitial,Yinitial), legal_pos(Xfinal,Yfinal),
+        legal_orientation(Xinitial,Yinitial, Xfinal,Yfinal),
         getBoardPos(Board, Xinitial, Yinitial, PieceInitial),
         PieceInitial < -2,
         getBoardPos(Board, Xfinal, Yfinal, PieceFinal),
@@ -251,7 +255,8 @@ legal_move(2, Board, Xinitial, Yinitial, Xfinal,Yfinal):-
         empty_cells(Board,Xinitial, Yinitial, Xfinal, Yfinal).
 
 legal_move(2, Board, Xinitial, Yinitial, Xfinal,Yfinal):-
-        legal_pos(Xinitial,Yinitial), legal_pos(Xfinal,Yfinal), legal_orientation(Xinitial,Yinitial, Xfinal,Yfinal),
+        legal_pos(Xinitial,Yinitial), legal_pos(Xfinal,Yfinal), 
+        legal_orientation(Xinitial,Yinitial, Xfinal,Yfinal),
         getBoardPos(Board, Xinitial, Yinitial, PieceInitial),
         PieceInitial == -2,
         getBoardPos(Board, Xfinal, Yfinal, PieceFinal),
@@ -260,7 +265,8 @@ legal_move(2, Board, Xinitial, Yinitial, Xfinal,Yfinal):-
 
 %move para o baby do player 2
 legal_move(2, Board, Xinitial, Yinitial, Xfinal,Yfinal):-
-        legal_pos(Xinitial,Yinitial), legal_pos(Xfinal,Yfinal), legal_orientation(Xinitial,Yinitial, Xfinal,Yfinal),
+        legal_pos(Xinitial,Yinitial), legal_pos(Xfinal,Yfinal),
+        legal_orientation(Xinitial,Yinitial, Xfinal,Yfinal),
         getBoardPos(Board, Xinitial, Yinitial, PieceInitial),
         PieceInitial == -1,
         queen_aprox(Board, 2, Xfinal, Yfinal, Xinitial, Yinitial),
@@ -277,19 +283,19 @@ move(Player, Board, Xinitial, Yinitial, Xfinal, Yfinal, NewBoard):-
 
 
 move(1, Board, Xinitial, Yinitial, Xfinal, Yfinal, PieceInitial, PieceFinal, NewBoard):-
-	PieceInitial >=2,
+        PieceInitial >=2,
 	PieceFinal < 0,
 	setBoardPos(Board, Xfinal, Yfinal, 1, PieceInitial, Board1),
 	setBoardPos(Board1, Xinitial, Yinitial, 1, 0, NewBoard).
 
 move(1, Board, Xinitial, Yinitial, Xfinal, Yfinal, PieceInitial, 0, NewBoard):-
-	PieceInitial > 2,
+        PieceInitial > 2,
         NewPieceInitial is PieceInitial - 1,
 	setBoardPos(Board, Xfinal, Yfinal, 1, NewPieceInitial, Board1),
 	setBoardPos(Board1, Xinitial, Yinitial, 1, 1, NewBoard).
 
 move(1, Board, Xinitial, Yinitial, Xfinal, Yfinal, 1, PieceFinal,NewBoard):-
-	PieceFinal < 0,
+        PieceFinal < 0,
 	setBoardPos(Board, Xfinal, Yfinal, 1, 1, Board1),
 	setBoardPos(Board1, Xinitial, Yinitial, 1, 0, NewBoard).
 
@@ -484,8 +490,11 @@ valid_moveAux([L1|Ls], Player, ListOfMovesTmp, Xinitial, Yinitial, 1, 13, ListOf
 %value(+PreviousBoard, +Board, +Player, -Value)
 value(PreviousBoard, Board, Player, Value):-
         game_over(Board,Winner),
+        Winner == Player,
+        write('game over'),nl,
         Value is 5.
 
+
 value(PreviousBoard, Board, 1, Value):-
         isQueenProtected(1, Board),
         once(countBoardPieces(Board, 2, Count)),
@@ -538,6 +547,7 @@ value(PreviousBoard, Board, 2, Value):-
         once(countBoardPieces(Board, 1, Count)),
         Count == PreviousCount,
         Value is 1.
+
 
 
 %cria lista com valores de uma lista de jogadas
@@ -648,7 +658,7 @@ getCoordsFromMoveAux([L1|Ls], Xinitial,Yinitial,Xfinal,Yfinal,Xvar):-
         Xvar == 2,
         Xfinal is L1.
 
-        %Yfinal
+%Yfinal
 getCoordsFromMoveAux([L1|Ls], Xinitial,Yinitial,Xfinal,Yfinal,Xvar):-
         Xvar == 3,
         Yfinal is L1.
