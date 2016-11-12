@@ -656,7 +656,17 @@ isQueenProtectedLineAux([L1|Ls], X, Y, Xqueen, Yqueen, ValueQueen):-
 isQueenProtectedLineAux([], X, Y, Xqueen, Yqueen, ValueQueen).
 
 
+max(ListOfValues, MaxValue):-
+        once(maxAux(ListOfValues, 0, MaxValue)).
 
+maxAux([V1|Vs], MaxValueTmp, MaxValue):-
+        V1 > MaxValueTmp,
+        maxAux(Vs, V1, MaxValue).
+maxAux([V1|Vs], MaxValueTmp, MaxValue):-
+        maxAux(Vs, MaxValueTmp, MaxValue).
+
+
+maxAux([], MaxValueTmp, MaxValueTmp).
 
 getCoordsFromMove([Xinitial,Yinitial,Xfinal,Yfinal], Xinitial,Yinitial,Xfinal,Yfinal).
 

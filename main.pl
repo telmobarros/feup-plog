@@ -43,5 +43,7 @@ play_turn(Board, NewBoard, CurPlayer, 1, Difficulty) :-
         write(Len1),nl,
         length(ListOfValues,Len2),
         write(Len2),nl,
-        choose_move(Difficulty, ListOfMoves, ListOfValues, Xinitial, Yinitial, Xfinal, Yfinal),    
+        max(ListOfValues, MaxValue),
+        write(MaxValue),nl,
+        %choose_move(Difficulty, ListOfMoves, ListOfValues, Xinitial, Yinitial, Xfinal, Yfinal),    
         move(CurPlayer, Board, Xinitial, Yinitial, Xfinal, Yfinal, NewBoard).
