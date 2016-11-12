@@ -1,40 +1,56 @@
 %:-include(library(random)).
 %choose_move(+Difficulty, +ListOfMoves, +ListOfValues, -Xinitial, -Yinitial, -Xfinal, -Yfinal).
-%choose_move(Difficulty, ListOfMoves, ListOfValues, Xinitial, Yinitial, Xfinal, Yfinal):-
+choose_move(Difficulty, ListOfMoves, ListOfValues, Xinitial, Yinitial, Xfinal, Yfinal):-
         %ESTE É O CASO QUE CORRE sempre se houver uma jogada de nivel 5 porque todos fazem essa jogada se for possivel
-        %max(ListOfValues,MaxValue),
-        %MaxValue == 5,
+        write('ListofValues'),nl,
+        max(ListOfValues,MaxValue),
+        write('sai do max MaxValue  '),write(MaxValue),nl,
+        MaxValue == 5.%,
         %getMoveWithValue(ListOfMoves, ListOfValues, Value, Xinitial, Yinitial, Xfinal, Yfinal).
 
-%choose_move(Difficulty, ListOfMoves, ListOfValues, Xinitial, Yinitial, Xfinal, Yfinal):-
-        %se não houver uma jogada de nivel 5 vai sortear o numero depois em baixo esta uma funcao que pensei que pode retornar o valor da jogaDA CONSOANTE O random que sair
-        %random(0, 100, Random),
-        %getValue(Difficulty, Random, Value),
+choose_move(Difficulty, ListOfMoves, ListOfValues, Xinitial, Yinitial, Xfinal, Yfinal):-
+        %se não houver uma jogada de nivel 5 vai sortear o numero depois em baixo esta uma
+        %funcao que pensei que pode retornar o valor da jogaDA CONSOANTE O random que sair
+        write('NÃO HAVIA MOVES TIPO 5 POR ISSO VOU ESCOLHER OUTRO'),nl,
+        random(0, 100, Random),
+        write(Random),nl,
+        getValue(Difficulty, Random, Value),
+        write(Value).
         %getMoveWithValue(ListOfMoves, ListOfValues, Value, Xinitial, Yinitial, Xfinal, Yfinal).
 
-%getValue(1, Random, Value):-Random =< 40, Value is  1.
-%getValue(1, Random, Value):-Random =< 70, Value is  2.
-%getValue(1, Random, Value):-Random =< 90, Value is  3.
-%getValue(1, Random, Value):-Random =< 100, Value is  4.
+getValue(1, Random, Value):-Random =< 40, Value is  1.
+getValue(1, Random, Value):-Random =< 70, Value is  2.
+getValue(1, Random, Value):-Random =< 90, Value is  3.
+getValue(1, Random, Value):-Random =< 100, Value is  4.
 
-%getValue(2, Random, Value):-Random =< 20, Value is  1.
-%getValue(2, Random, Value):-Random =< 50, Value is  2.
-%getValue(2, Random, Value):-Random =< 80, Value is  3.
-%getValue(2, Random, Value):-Random =< 100, Value is  4.
+getValue(2, Random, Value):-Random =< 20, Value is  1.
+getValue(2, Random, Value):-Random =< 50, Value is  2.
+getValue(2, Random, Value):-Random =< 80, Value is  3.
+getValue(2, Random, Value):-Random =< 100, Value is  4.
 
-%...
-%...
-%...
 
-%getValue(4, Random, Value):- max(ListOfValues,Value).   %sempre que a dificuldade dor 4 independemente do random ele ia escolher o valor maximo possivel
+getValue(3, Random, Value):-Random =< 10, Value is  1.
+getValue(3, Random, Value):-Random =< 30, Value is  2.
+getValue(3, Random, Value):-Random =< 60, Value is  3.
+getValue(3, Random, Value):-Random =< 100, Value is  4.
+
+
+%sempre que a dificuldade for 4 independemente do random ele ia escolher o valor maximo possivel
+getValue(4, Random, Value):- max(ListOfValues,Value). 
+
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%% NOTAS %%%%%%%%%%%%%%%%%%%
 
 
 
-%pensei em fazer uma funcao getMovesWithValue(+ListOfMoves, +ListOfValues, +Value, -SelectedMoves) que vai buscar os moves com um certo value
-%ou entao logo uma funcao que faz basicamente a anterior que falei e depois faz logo um random dentro dos moves selecionados e retorna logo um move com um certo value --->  %getMoveWithValue(ListOfMoves, ListOfValues, Value, Xinitial, Yinitial, Xfinal, Yfinal). FOI ESTA QUE "CHAMEI" LÁ EM CIMA
+%pensei em fazer uma funcao getMovesWithValue(+ListOfMoves, +ListOfValues, +Value, -SelectedMoves) 
+%que vai buscar os moves com um certo value
+%ou entao logo uma funcao que faz basicamente a anterior que falei 
+%e depois faz logo um random dentro dos moves selecionados 
+%e retorna logo um move com um certo value ---> 
+%getMoveWithValue(ListOfMoves, ListOfValues, Value, Xinitial, Yinitial, Xfinal, Yfinal). 
+%FOI ESTA QUE "CHAMEI" LÁ EM CIMA
 
 %difficulty easy 1
 %5 - sempre
