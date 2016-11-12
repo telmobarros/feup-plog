@@ -1,7 +1,4 @@
-%:-include(library(random)).
-
-
-/**board_initialized(Board):-
+board_initialized(Board):-
         Board=[[0,0,0,0,0,-20,0,0,0,0,0,0],          %estado inicial
                [0,0,0,0,0,0,0,0,0,0,0,0],
                [0,0,0,0,0,0,0,0,0,0,0,0],
@@ -13,9 +10,23 @@
                [0,0,0,0,0,0,0,0,0,0,0,0],
                [0,0,0,0,0,0,0,0,0,0,0,0],
                [0,0,0,0,0,0,0,0,0,0,0,0],
-               [0,0,0,0,0,0,20,0,0,0,0,0]].*/
+               [0,0,0,0,0,0,20,0,0,0,0,0]].
 
-board_initialized(Board):-
+/*board_initialized2(NBoard):-
+        NBoard=[[0,0,0,0,0,0,-1,0,0,0,0,0],          %estado inicial
+               [0,0,0,0,0,0,0,0,0,0,0,0],
+               [0,0,0,0,0,0,0,19,0,0,0,0],
+               [0,0,0,-19,0,0,0,0,0,0,0,0],
+               [0,0,0,0,0,0,0,0,0,0,0,0],
+               [0,0,0,0,0,0,0,0,0,0,0,0],
+               [0,0,0,0,0,0,0,0,0,0,0,0],
+               [0,0,0,0,0,0,0,0,0,0,0,0],
+               [0,0,0,0,0,0,0,0,0,0,0,0],
+               [0,0,0,0,0,0,0,0,0,0,0,0],
+               [0,0,0,0,0,0,0,0,0,0,0,0],
+               [0,0,0,0,0,0,1,0,0,0,0,0]].*/
+
+/*board_initialized(Board):-
         Board=[[0,0,0,-1,0,0,0,0,0,-1,0,-1],            %estado intermédio
                [0,-1,0,-1,-1,0,0,0,-1,0,0,-6],
                [0,-1,0,0,0,0,0,0,0,0,-1,0],
@@ -27,7 +38,7 @@ board_initialized(Board):-
                [0,0,0,0,0,0,0,0,0,0,0,0],
                [0,0,1,0,-1,0,0,0,0,0,1,0],
                [9,0,0,0,0,0,0,0,0,0,0,1],
-               [0,1,0,0,0,0,-1,0,0,0,0,0]].
+               [0,1,0,0,0,0,-1,0,0,0,0,0]].*/
 
 /**board_initialized(Board):-
      Board=[[0,0,0,0,0,0,0,0,0,0,0,0],           %estado final
@@ -45,94 +56,7 @@ board_initialized(Board):-
 
 
 
-display_board([L1|Ls]):-
-        write('  1    2    3    4    5    6    7    8    9    10    11    12'), nl,        %imprime cabeçalho com letras das colunas
-        write('-------------------------------------------------------------'), nl,     %imprime separador das linhas
-        display_lines([L1|Ls], 1).
 
-display_lines([L1|Ls], Nlines):- 
-        display_line(L1), write('| '), write(Nlines), nl,
-        write('-------------------------------------------------------------'), nl,     %imprime separador das linhas
-        Nextlines is Nlines + 1,
-        display_lines(Ls,Nextlines).
-
-display_lines([], Nlines).
-
-display_line([E|Es]):-
-        write('|'),                                                                     %imprime separador de coluna
-        translate(E,T),                                                                 %converte o número na representação da peça
-	write(T),                                                                       %imprime a representação da peça
-        display_line(Es).
-
-display_line([]).
-
-/**writeabs(X) :- X < 0 ->
-               Y is -X,
-               write(' '),write(Y), write('P ');   %peça preta
-               X > 0 ->
-               write(' '),write(X), write('B ');           %peça branca
-               write('    ').   %espaço vazio*/
-
-translate(0,'    ').
-translate(-20,' 20P').
-translate(-19,' 19P').
-translate(-18,' 18P').
-translate(-17,' 17P').
-translate(-16,' 16P').
-translate(-15,' 15P').
-translate(-14,' 14P').
-translate(-13,' 13P').
-translate(-12,' 12P').
-translate(-11,' 11P').
-translate(-10,' 10P').
-translate(-9,' 9P ').
-translate(-8,' 8P ').
-translate(-7,' 7P ').
-translate(-6,' 6P ').
-translate(-5,' 5P ').
-translate(-4,' 4P ').
-translate(-3,' 3P ').
-translate(-2,' 2P ').
-translate(-1,'  P ').
-translate(20,' 20B').
-translate(19,' 19B').
-translate(18,' 18B').
-translate(17,' 17B').
-translate(16,' 16B').
-translate(15,' 15B').
-translate(14,' 14B').
-translate(13,' 13B').
-translate(12,' 12B').
-translate(11,' 11B').
-translate(10,' 10B').
-translate(9,' 9B ').
-translate(8,' 8B ').
-translate(7,' 7B ').
-translate(6,' 6B ').
-translate(5,' 5B ').
-translate(4,' 4B ').
-translate(3,' 3B ').
-translate(2,' 2B ').
-translate(1,'  B ').
-
-%Pedir ao utilizar a o modo de jogo, 1 -> Humano vs Humano, 2 -> Humado vs Computador, 3 -> Computador vs Computador
-readGameMode(Mode) :-
-        write('Game mode'), nl,
-        write('1 -> Human vs Human'), nl,
-        write('2 -> Human vs Computer'), nl,
-        write('3 -> Computer vs Computer'), nl,
-        write('Mode: '), read(Mode),
-        Mode >= 1, Mode =< 3.
-
-
-readComputerDifficulty(1, Difficulty).
-readComputerDifficulty(Mode, Difficulty) :-
-        Mode > 1,
-        write('Computer Difficulty'), nl,
-        write('1 -> Easy'), nl,
-        write('2 -> Hard'), nl,
-        write('Difficulty: '), read(Difficulty),
-        Difficulty >= 1, Difficulty =< 2.
 
 
 initializeGame(Mode, Board, Player1Type, Player2Type, CurPlayer, CurPlayerType) :-
@@ -165,16 +89,7 @@ switchPlayer(2, NewPlayer, NewPlayerType, Player1Type, Player2Type) :-
 
 
 
-%Pedir ao utilizar a jogada a realizar, ou seja, posicao inicial da pec e posicao final
-%X nome da coluna
-%Y numero da linha
-readMove(Xinitial, Yinitial, Xfinal, Yfinal) :-
-        write('Piece to move:'), nl,
-        write('Coluna->'), read(Xinitial), 
-        write('Linha->'), read(Yinitial), nl,
-        write('Where to move:'), nl,
-        write('Coluna->'), read(Xfinal),
-        write('Linha->'), read(Yfinal), nl.
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -230,10 +145,10 @@ setBoardLinePos([L1|Ls], X, Xprox,PiecePlayer, [L1|NewLs]):-
                            write('encontrei, vou trocar'), nl.*/
 
 setBoardLinePos([_|Ls], X, X,PiecePlayer, [PiecePlayer|Ls]).%:-
-        % X > 1,
-        %write(PiecePlayer),nl,
-        %write(Ls),nl,
-        %write('encontrei, vou trocar'), nl.
+% X > 1,
+%write(PiecePlayer),nl,
+%write(Ls),nl,
+%write('encontrei, vou trocar'), nl.
 
 
 
@@ -480,7 +395,6 @@ getQueenPosAux(Player, [L1|Ls], Yprox, X, Y, Value):-
 
 getQueenPosAux(Player, [], Yprox, X, Y, Value):-
         nonvar(Value).
-%:- write('acabou tudo').
 
 getQueenLinePosAux(1, [L1|Ls], Xprox, Yprox, X, Y, Value):-
         L1 < 2,
@@ -537,7 +451,7 @@ getQueenLinePosAux(Player, [], Xprox, Yprox, X, Y, Value).        %:- write(X),w
 
 %verifica se a peca ao movimentar-se se se aproxima da rainha
 queen_aprox(Board, 1, Xfinal, Yfinal, Xinitial, Yinitial):-
-          %write('hmmmmm'),nl,
+        %write('hmmmmm'),nl,
         getQueenPos(2, Board, Xrainha, Yrainha, Value),
         distancia(Xinitial,Yinitial,Xrainha,Yrainha,Distinitial),
         distancia(Xfinal,Yfinal,Xrainha,Yrainha,Distfinal),
@@ -563,7 +477,6 @@ distancia(X,Y,Xrainha,Yrainha,Dist):-
 
 valid_moves([L1|Ls], Player, ListOfMoves):-
         valid_movesAux([L1|Ls], Player, [], 1, 1,ListOfMoves).
-        %write(ListOfMoves),nl.
 
 
 valid_movesAux([L1|Ls], 1, ListOfMovesTmp, X, Y, ListOfMoves):-
@@ -595,7 +508,7 @@ valid_movesAux([L1|Ls], Player, ListOfMovesTmp, 13, Y, ListOfMoves):-
         Yprox is Y + 1,
         valid_movesAux([L1|Ls], Player, ListOfMovesTmp, 1, Yprox, ListOfMoves).
 
-valid_movesAux([L1|Ls], Player, ListOfMovesTmp, 1, 13, ListOfMoves):- append([],ListOfMovesTmp,ListOfMoves).
+valid_movesAux([L1|Ls], Player, ListOfMovesTmp, 1, 13, ListOfMovesTmp).%:- append([],ListOfMovesTmp,ListOfMoves).
 
 valid_moveAux([L1|Ls], Player, ListOfMovesTmp, Xinitial, Yinitial, Xfinal, Yfinal, ListOfMoves):-
         Xfinal < 13,
@@ -612,7 +525,7 @@ valid_moveAux([L1|Ls], Player, ListOfMovesTmp, Xinitial, Yinitial, 13, Yfinal, L
         Yprox is Yfinal + 1,
         valid_moveAux([L1|Ls], Player, ListOfMovesTmp, Xinitial, Yinitial, 1, Yprox, ListOfMoves).
 
-valid_moveAux([L1|Ls], Player, ListOfMovesTmp, Xinitial, Yinitial, 1, 13, ListOfMoves):- append([],ListOfMovesTmp,ListOfMoves).%:-        write(ListOfMoves),nl.
+valid_moveAux([L1|Ls], Player, ListOfMovesTmp, Xinitial, Yinitial, 1, 13, ListOfMovesTmp).%:- append([],ListOfMovesTmp,ListOfMoves).%:-        write(ListOfMoves),nl.
 
 %avalia todas as jogadas possiveis
 %5-Ganhar o jogo
@@ -620,17 +533,130 @@ valid_moveAux([L1|Ls], Player, ListOfMovesTmp, Xinitial, Yinitial, 1, 13, ListOf
 %3-Proteger a rainha
 %2-Comer um baby e deixar a rainha na linha de ataque
 %1-Não comer um baby e deixar a rainha na linha de ataque
-%value
+%value(+PreviousBoard, +Board, +Player, -Value)
+value(PreviousBoard, Board, Player, Value):-
+        game_over(Board,Winner),
+        Value is 5.
+
+value(PreviousBoard, Board, 1, Value):-
+        isQueenProtected(1, Board),
+        once(countBoardPieces(Board, 2, Count)),
+        once(countBoardPieces(PreviousBoard, 2, PreviousCount)),
+        Count < PreviousCount,
+        Value is 4.
+
+value(PreviousBoard, Board, 2, Value):-
+        isQueenProtected(2, Board),
+        once(countBoardPieces(PreviousBoard, 1, PreviousCount)),
+        once(countBoardPieces(Board, 1, Count)),
+        Count < PreviousCount,
+        Value is 4.
+
+value(PreviousBoard, Board, 1, Value):-
+        isQueenProtected(1, Board),
+        once(countBoardPieces(PreviousBoard, 2, PreviousCount)),
+        once(countBoardPieces(Board, 2, Count)),
+        Count == PreviousCount,
+        Value is 3.
+
+value(PreviousBoard, Board, 2, Value):-
+        isQueenProtected(2, Board),
+        once(countBoardPieces(PreviousBoard, 1, PreviousCount)),
+        once(countBoardPieces(Board, 1, Count)),
+        Count == PreviousCount,
+        Value is 3.
+
+value(PreviousBoard, Board, 1, Value):-
+        once(countBoardPieces(Board, 2, Count)),
+        once(countBoardPieces(PreviousBoard, 2, PreviousCount)),
+        Count < PreviousCount,
+        Value is 2.
+
+value(PreviousBoard, Board, 2, Value):-
+        once(countBoardPieces(PreviousBoard, 1, PreviousCount)),
+        once(countBoardPieces(Board, 1, Count)),
+        Count < PreviousCount,
+        Value is 2.
+
+value(PreviousBoard, Board, 1, Value):-
+        once(countBoardPieces(PreviousBoard, 2, PreviousCount)),
+        once(countBoardPieces(Board, 2, Count)),
+        Count == PreviousCount,
+        Value is 1.
+
+value(PreviousBoard, Board, 2, Value):-
+        once(countBoardPieces(PreviousBoard, 1, PreviousCount)),
+        once(countBoardPieces(Board, 1, Count)),
+        Count == PreviousCount,
+        Value is 1.
+
+%cria lista com valores de uma lista de jogadas
+value_moves(Board, CurPlayer, [Move|Ms], [Value|Vs]):-
+        getCoordsFromMove(Move, Xinitial,Yinitial,Xfinal,Yfinal),
+        move(CurPlayer, Board, Xinitial, Yinitial, Xfinal, Yfinal, NewBoard),
+        value(Board, NewBoard, CurPlayer, Value),
+        value_moves(Board, CurPlayer, Ms, Vs).
+
+
+value_moves(Board, CurPlayer, [], []).
 
 
 
 
-choose_move(Difficulty,Board, [Move|Ls], Xinitial, Yinitial, Xfinal, Yfinal):-
-        %write(ListOfMoves),nl,
-        %random_member(Move,ListOfMoves),
-        %ESCOLHE A PRIMEIRA JOGADA POSSIVEL
-        getCoordsFromMove(Move, Xinitial,Yinitial,Xfinal,Yfinal).
-        %write(Xinitial),write(Yinitial),write(Xfinal),write(Yfinal),nl.
+%conta as peças de um jogador no board
+%countBoardPieces(+Board, +Player, -Count)
+%countBoardPieces(Board, Player, Count):-
+countBoardPieces([L1|Ls], Player, Count):-
+        countBoardPiecesLine(L1, Player, CountLineTmp),
+        countBoardPieces(Ls, Player, CountTmp),
+        Count is CountTmp + CountLineTmp.
+
+countBoardPieces([], Player, 0).
+
+countBoardPiecesLine([L1|Ls], 1, Count):-
+        L1 > 0,
+        countBoardPiecesLine(Ls, 1, CountTmp),
+        Count is CountTmp + 1.
+
+countBoardPiecesLine([L1|Ls], 2, Count):-
+        L1 < 0,
+        countBoardPiecesLine(Ls, 2, CountTmp),
+        Count is CountTmp + 1.
+
+countBoardPiecesLine([L1|Ls], Player, Count):-
+        countBoardPiecesLine(Ls, Player, Count).
+
+countBoardPiecesLine([], Player, 0).
+
+isQueenProtected(Player, Board):-
+        getQueenPos(Player,Board,X,Y,Value),
+        once(isQueenProtectedAux(Board, 1, 1, X, Y, Value)).
+
+%percorre todas as linhas até à ultima
+isQueenProtectedAux([L1|Ls], X, Y, Xqueen, Yqueen , ValueQueen):-
+        isQueenProtectedLineAux(L1, X, Y, Xqueen, Yqueen, ValueQueen),
+        Yprox is Y + 1,
+        isQueenProtectedAux(Ls, 1, Yprox, Xqueen, Yqueen, ValueQueen).
+
+isQueenProtectedAux([], X, Y, Xqueen, Yqueen, ValueQueen).
+
+%linhas com 0 ou peças da mesma cor
+isQueenProtectedLineAux([L1|Ls], X, Y, Xqueen, Yqueen, ValueQueen):-
+        legal_orientation(X,Y,Xqueen,Yqueen),
+        Var is L1 * ValueQueen,
+        Var >= 0,
+        Xprox is X + 1,
+        isQueenProtectedLineAux(Ls, Xprox, Y, Xqueen, Yqueen, ValueQueen).
+
+isQueenProtectedLineAux([L1|Ls], X, Y, Xqueen, Yqueen, ValueQueen):-
+        \+legal_orientation(X,Y,Xqueen,Yqueen),
+        Xprox is X + 1,
+        isQueenProtectedLineAux(Ls, Xprox, Y, Xqueen, Yqueen, ValueQueen).
+
+isQueenProtectedLineAux([], X, Y, Xqueen, Yqueen, ValueQueen).
+
+
+
 
 getCoordsFromMove([Xinitial,Yinitial,Xfinal,Yfinal], Xinitial,Yinitial,Xfinal,Yfinal).
 
@@ -669,3 +695,7 @@ game_over(Board, Winner):- %IMPORTANTE
         length(ListOfMoves,Len),
         Len == 0,
         Winner is 2.
+
+
+
+
