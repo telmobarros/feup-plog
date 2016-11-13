@@ -12,6 +12,7 @@ monkey_queen:-
 
 
 play_game(Board, Player1Type, Player2Type, CurPlayer, CurPlayerType, Difficulty) :-
+        nl,
         display_board(Board),
         %board_initialized2(NextBoard),
         %display_board(NextBoard),
@@ -41,7 +42,7 @@ play_turn(Board, NewBoard, CurPlayer, 1, Difficulty) :-
         valid_moves(Board, CurPlayer, ListOfMoves),
         value_moves(Board, CurPlayer, ListOfMoves, ListOfValues),
         once(choose_move(Difficulty, ListOfMoves, ListOfValues, Xinitial, Yinitial, Xfinal, Yfinal)),  
-        move(CurPlayer, Board, Xinitial, Yinitial, Xfinal, Yfinal, NewBoard),nl.
+        move(CurPlayer, Board, Xinitial, Yinitial, Xfinal, Yfinal, NewBoard).
 
 
 

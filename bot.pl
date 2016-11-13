@@ -21,7 +21,7 @@ choose_move(4, ListOfMoves, ListOfValues, Xinitial, Yinitial, Xfinal, Yfinal):-
         max(ListOfValues,MaxValue),
         once(getMoveWithValue(ListOfMoves, ListOfValues, MaxValue, Xinitial, Yinitial, Xfinal, Yfinal)).
 
-
+/*
 choose_move(3, ListOfMoves, ListOfValues, Xinitial, Yinitial, Xfinal, Yfinal):-
         min(ListOfValues, MinValue),
         write('minValue'),write(MinValue),nl,
@@ -30,7 +30,7 @@ choose_move(3, ListOfMoves, ListOfValues, Xinitial, Yinitial, Xfinal, Yfinal):-
         max(ListOfValues,MaxValue),
         once(getMoveWithValue(ListOfMoves, ListOfValues, MaxValue, Xinitial, Yinitial, Xfinal, Yfinal)).
             
-
+*/
 
 getValue(1,Value,ListOfValues):-
         getValue(1,Value).

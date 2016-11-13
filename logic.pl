@@ -492,7 +492,7 @@ value(PreviousBoard, Board, Player, Value):-
         game_over(Board,Winner),
         Winner == Player,
         Value is 5.
-
+/*
 value(PreviousBoard, Board, 1, Value):-
         \+isQueenProtected(1, Board),
         game_over(Board,Winner1),
@@ -507,7 +507,7 @@ value(PreviousBoard, Board, 2, Value):-
         game_over(PreviousBoard,Winner2),
         Winner1 == 1,
         Winner2 ==1,
-        Value is -1.
+        Value is -1.*/
 
 value(PreviousBoard, Board, 1, Value):-
         isQueenProtected(1, Board),
