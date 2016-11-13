@@ -1,4 +1,5 @@
 display_board([L1|Ls]):-
+        nl,
         write('   1    2    3    4    5    6    7    8    9    10   11   12'), nl,        %imprime cabeçalho com letras das colunas
         write('-------------------------------------------------------------'), nl,     %imprime separador das linhas
         display_lines([L1|Ls], 1).
@@ -88,8 +89,30 @@ readComputerDifficulty(Mode, Difficulty) :-
 %Y numero da linha
 readMove(Xinitial, Yinitial, Xfinal, Yfinal) :-
         write('Piece to move:'), nl,
-        write('Coluna->'), read(Xinitial), 
-        write('Linha->'), read(Yinitial), nl,
+        write('Column->'), read(Xinitial), 
+        write('Row->'), read(Yinitial), nl,
         write('Where to move:'), nl,
-        write('Coluna->'), read(Xfinal),
-        write('Linha->'), read(Yfinal), nl.
+        write('Column->'), read(Xfinal),
+        write('Row->'), read(Yfinal),nl.
+
+waitTurn:-
+        read(X).
+
+display_msg_best_move(Player ,Board, NewBoard):-
+        once(valid_moves(Board, Player, ListOfMoves)),
+        once(value_moves(Board, Player, ListOfMoves, ListOfValues)),
+        value(Board, NewBoard, Player, Value),
+        max(ListOfValues, MaxValue),
+        display_msg_best_moveAux(Value, MaxValue, ListOfMoves, ListOfValues).
+
+display_msg_best_moveAux(Value, Value, ListOfMoves, ListOfValues):-
+        write('The best move was choosen.'), nl.
+
+display_msg_best_moveAux(Value, MaxValue, ListOfMoves, ListOfValues):-
+        write('There was a better move (ex):'),nl,
+        getMoveWithValue(ListOfMoves, ListOfValues, MaxValue, Xinitialcp, Yinitialcp, Xfinalcp, Yfinalcp),
+        write('Xinitial: '), write(Xinitialcp),nl,
+        write('Yinitial: '), write(Yinitialcp),nl,
+        write('Xfinal: '), write(Xfinalcp),nl,
+        write('Yfinal: '), write(Yfinalcp),nl.
+                
