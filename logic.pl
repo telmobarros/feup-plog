@@ -1,16 +1,18 @@
+
+
 board_initialized(Board):-
-        Board=[[0,0,0,0,0,-20,0,0,0,0,0,0],            %estado intermédio
-               [0,0,0,0,0,0,0,0,0,0,0,0],
-               [0,0,0,0,0,0,0,0,0,0,0,0],
-               [0,0,0,0,0,0,0,0,0,0,0,0],
-               [0,0,0,0,0,0,0,0,0,0,0,0],
-               [0,0,0,0,0,0,0,0,0,0,0,0],
-               [0,0,0,0,0,0,0,0,0,0,0,0],
-               [0,0,0,0,0,0,0,0,0,0,0,0],
-               [0,0,0,0,0,0,0,0,0,0,0,0],
-               [0,0,0,0,0,0,0,0,0,0,0,0],
-               [0,0,0,0,0,0,0,0,0,0,0,0],
-               [0,0,0,0,0,0,20,0,0,0,0,0]].
+     Board=[[0,0,0,-1,0,0,0,0,0,-1,0,-1],            %estado intermédio
+           [0,-1,0,-1,-1,0,0,0,-1,0,0,-6],
+           [0,-1,0,0,0,0,0,0,0,0,-1,-1],
+           [0,0,0,0,1,0,0,0,1,0,0,0],
+           [0,0,0,0,0,0,0,0,0,0,0,0],
+           [0,0,0,0,0,0,0,0,0,0,0,0],
+           [0,0,0,0,0,0,0,0,0,0,0,0],
+           [0,0,0,0,0,0,0,0,0,0,0,0],
+           [0,0,0,0,0,0,0,0,0,0,0,0],
+           [0,0,1,0,-1,0,0,0,0,0,1,0],
+           [9,0,0,0,0,0,0,0,0,0,0,1],
+           [0,1,0,0,0,0,-1,0,0,0,0,0]].
 
 
 
@@ -42,8 +44,8 @@ switchPlayer(2, NewPlayer, NewPlayerType, Player1Type, Player2Type) :-
         NewPlayer is 1,
         NewPlayerType is Player1Type.
 
-opponent(1, 2).
-opponent(2, 1).
+
+
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -73,8 +75,6 @@ getBoardLinePos([L1|Ls], X, Xprox,PiecePlayer):-
 getBoardLinePos([L1|Ls], X, X,PiecePlayer):- PiecePlayer is L1.
 
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
 %Coloca a peça PiecePlayer na posição X,Y do tabuleiro
 %setBoardPos([L1|Ls],X, Y, PiecePlayer,[L1|NewLs]):- setBoardPos([L1|Ls],X, Y, 1,PiecePlayer,[L1|NewLs]).
 
@@ -95,7 +95,13 @@ setBoardLinePos([L1|Ls], X, Xprox,PiecePlayer, [L1|NewLs]):-
         Var is Xprox + 1,
         setBoardLinePos(Ls, X, Var,PiecePlayer, NewLs).
 
-setBoardLinePos([_|Ls], X, X,PiecePlayer, [PiecePlayer|Ls]).
+
+/*setBoardLinePos([L1|Ls], 1, 1,PiecePlayer, [[]|NewLine]):-
+                           append([PiecePlayer],Ls,NewLine),
+*/
+setBoardLinePos([_|Ls], X, X,PiecePlayer, [PiecePlayer|Ls]).%:-
+% X > 1,
+
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -210,9 +216,8 @@ empty_cells(Board, X, Y, X, Y).
 %verifica se a posicao final corresponde a uma peça do adversário ou uma casa vazia
 %verifica se o movimento tem uma direção válida (horizontal, vertical ou diagonal)
 %verifica se as casas entre a posicao inicial e a posicao final estao livres
-%legal_move(+Player, +Board, +Xinitial, +Yinitial, +Xfinal, +Yfinal)
+%legal_move(+Player, +Board, +Xinitial, +Yinitial, +Xfinal, -PieceInitial, -PieceFinal)
 legal_move(1, Board, Xinitial, Yinitial, Xfinal,Yfinal):-
-        legal_pos(Xinitial,Yinitial), legal_pos(Xfinal,Yfinal),
         legal_orientation(Xinitial,Yinitial, Xfinal,Yfinal),
         getBoardPos(Board, Xinitial, Yinitial, PieceInitial),
         PieceInitial > 2,
@@ -269,48 +274,71 @@ legal_move(2, Board, Xinitial, Yinitial, Xfinal,Yfinal):-
         PieceFinal >= 0,
         empty_cells(Board,Xinitial, Yinitial, Xfinal, Yfinal).
 
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
 %move a peça da posição inicial para a final
 %move(+Player, +Board, +Xinitial, +Yinitial, +Xfinal, +Yfinal, -NewBoard)
 move(Player, Board, Xinitial, Yinitial, Xfinal, Yfinal, NewBoard):-
         getBoardPos(Board, Xinitial, Yinitial, PieceInitial),
         getBoardPos(Board, Xfinal, Yfinal, PieceFinal),
-        moveAux(Player, Board, Xinitial, Yinitial, Xfinal, Yfinal, PieceInitial, PieceFinal, NewBoard).
+        move(Player, Board, Xinitial, Yinitial, Xfinal, Yfinal, PieceInitial, PieceFinal, NewBoard).
 
-%movimento da rainha quando come uma peça adversária
-moveAux(Player, Board, Xinitial, Yinitial, Xfinal, Yfinal, PieceInitial, PieceFinal, NewBoard):-
-        PieceInitial \== -1,
-        PieceInitial \== 1,
-        Var is PieceInitial * PieceFinal,
-	Var < 0,
+
+move(1, Board, Xinitial, Yinitial, Xfinal, Yfinal, PieceInitial, PieceFinal, NewBoard):-
+        PieceInitial >=2,
+	PieceFinal < 0,
 	setBoardPos(Board, Xfinal, Yfinal, 1, PieceInitial, Board1),
 	setBoardPos(Board1, Xinitial, Yinitial, 1, 0, NewBoard).
 
-%movimento da rainha do player 1 quando não come uma peça adversária
-moveAux(1, Board, Xinitial, Yinitial, Xfinal, Yfinal, PieceInitial, 0, NewBoard):-
+move(1, Board, Xinitial, Yinitial, Xfinal, Yfinal, PieceInitial, 0, NewBoard):-
         PieceInitial > 2,
         NewPieceInitial is PieceInitial - 1,
 	setBoardPos(Board, Xfinal, Yfinal, 1, NewPieceInitial, Board1),
 	setBoardPos(Board1, Xinitial, Yinitial, 1, 1, NewBoard).
 
-%movimento da rainha do player 2 quando não come uma peça adversária
-moveAux(2, Board, Xinitial, Yinitial, Xfinal, Yfinal, PieceInitial, 0, NewBoard):-
+move(1, Board, Xinitial, Yinitial, Xfinal, Yfinal, 1, PieceFinal,NewBoard):-
+        PieceFinal < 0,
+	setBoardPos(Board, Xfinal, Yfinal, 1, 1, Board1),
+	setBoardPos(Board1, Xinitial, Yinitial, 1, 0, NewBoard).
+
+
+%movimento do baby quando nao come nenhuma peca
+move(1, Board, Xinitial, Yinitial, Xfinal, Yfinal, 1, 0, NewBoard):-
+	setBoardPos(Board, Xfinal, Yfinal, 1, 1, Board1),
+	setBoardPos(Board1, Xinitial, Yinitial, 1, 0, NewBoard).
+
+
+move(2, Board, Xinitial, Yinitial, Xfinal, Yfinal, PieceInitial, PieceFinal, NewBoard):-
+        PieceInitial =< -2,
+        PieceFinal > 0,
+        setBoardPos(Board, Xfinal, Yfinal, 1, PieceInitial, Board1),
+        setBoardPos(Board1, Xinitial, Yinitial, 1, 0, NewBoard).
+
+move(2, Board, Xinitial, Yinitial, Xfinal, Yfinal, PieceInitial, 0, NewBoard):-
         PieceInitial < -2,
         NewPieceInitial is PieceInitial + 1,
         setBoardPos(Board, Xfinal, Yfinal, 1,NewPieceInitial, Board1),
         setBoardPos(Board1, Xinitial, Yinitial, 1,-1, NewBoard).
 
-%movimento do baby quando come uma peça adversária
-moveAux(Player, Board, Xinitial, Yinitial, Xfinal, Yfinal, PieceInitial, PieceFinal,NewBoard):-
-	PieceInitial >= -1,
-        PieceInitial =< 1,
-        setBoardPos(Board, Xfinal, Yfinal, 1, PieceInitial, Board1),
-	setBoardPos(Board1, Xinitial, Yinitial, 1, 0, NewBoard).
+move(2, Board, Xinitial, Yinitial, Xfinal, Yfinal, -1, PieceFinal,NewBoard):-
+        PieceFinal > 0,
+        setBoardPos(Board, Xfinal, Yfinal, 1,-1, Board1),
+        setBoardPos(Board1, Xinitial, Yinitial, 1, 0, NewBoard).
+
+move(2, Board, Xinitial, Yinitial, Xfinal, Yfinal, -1, 0, NewBoard):-
+        setBoardPos(Board, Xfinal, Yfinal, 1,-1, Board1),
+        setBoardPos(Board1, Xinitial, Yinitial, 1, 0, NewBoard).
 
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%verifica se a rainha se movimenta para uma posicao onde se encontra um baby ou rainha da equipa adversaria
+%legal_queen_move(Xinitial,Yinitial,Xfinal,Yfinal).
+
+%verfifca se as posicoes final sao posicoes validas em relacao a posicao inicial e guarda a nova posicao ou whatever
+%diagonal_move(Xinitial, Yinitial, Xfinal,Yfinal).
+
+%guarda as novas posicoes apos fazer o movimento horizontal da peca
+%horizontal_move(Xinitial, Yinitial, Xfinal,Yfinal).
+
+%guarda as novas posicoes apos fazer o movimento vertical da peca
+%vertical_move(Xinitial, Yinitial, Xfinal,Yfinal).
 
 %pesquisa posicao rainha e valor
 getQueenPos(Player, [L1|Ls], X, Y, Value):-
@@ -347,16 +375,50 @@ getQueenLinePosAux(2, [L1|Ls], Xprox, Yprox, X, Y, Value):-
         X is Xprox,
         Y is Yprox.
 
-getQueenLinePosAux(Player, [], Xprox, Yprox, X, Y, Value).
+getQueenLinePosAux(Player, [], Xprox, Yprox, X, Y, Value).        %:- write(X),write('acabou a linha').
 
+/*getQueenPosAux(Player, [L1|Ls], Yprox, X, Y, Value):-
+                         X == _,
+                         write(X),nl,
+                         getQueenLinePosAux(Player,L1, 1, Yprox, X, Y, Value).
+
+                         getQueenPosAux(Player, [L1|Ls], 13, X, Y, Value).
+
+                         getQueenLinePosAux(Player, [L1|Ls], Xprox, Yprox, X, Y, Value):-
+                         L1 >= -1,
+                         L1 =< 1,
+                         Var is Xprox + 1,
+                         getQueenLinePosAux(Player, Ls, Var, Yprox, X, Y, Value).
+
+                         getQueenLinePosAux(1, [L1|Ls], Xprox, Yprox, X, Y, Value):-
+                         L1 >= 2,
+                         Value is L1,
+                         X is Xprox,
+                         Y is Yprox.
+
+                         getQueenLinePosAux(2, [L1|Ls], Xprox, Yprox, X, Y, Value):-
+                         L1 =< -2,
+                         Value is L1,
+                         X is Xprox,
+                         Y is Yprox.
+
+                         getQueenLinePosAux(Player, [L1|Ls], 13, Yprox, X, Y, Value):-
+                         Var is Yprox+1,
+                         getQueenPosAux(Player, [L1|Ls], Var, X, Y, Value).*/
 
 %verifica se a peca ao movimentar-se se se aproxima da rainha
-queen_aprox(Board, Player, Xfinal, Yfinal, Xinitial, Yinitial):-
-        opponent(Player, Opponent),
-        getQueenPos(Opponent, Board, Xrainha, Yrainha, Value),
+queen_aprox(Board, 1, Xfinal, Yfinal, Xinitial, Yinitial):-
+        getQueenPos(2, Board, Xrainha, Yrainha, Value),
         distancia(Xinitial,Yinitial,Xrainha,Yrainha,Distinitial),
         distancia(Xfinal,Yfinal,Xrainha,Yrainha,Distfinal),
         Distfinal < Distinitial.
+
+queen_aprox(Board, 2, Xfinal, Yfinal, Xinitial, Yinitial):-
+        getQueenPos(1, Board, Xrainha, Yrainha, Value),
+        distancia(Xinitial,Yinitial,Xrainha,Yrainha,Distinitial),
+        distancia(Xfinal,Yfinal,Xrainha,Yrainha,Distfinal),
+        Distfinal < Distinitial.
+
 
 
 distancia(X,Y,Xrainha,Yrainha,Dist):-
@@ -366,7 +428,6 @@ distancia(X,Y,Xrainha,Yrainha,Dist):-
         Suby is Yvar * Yvar,
         Distint is Subx + Suby,
         Dist is sqrt(Distint).
-
 
 valid_moves([L1|Ls], Player, ListOfMoves):-
         valid_movesAux([L1|Ls], Player, [], 1, 1,ListOfMoves).
@@ -418,7 +479,7 @@ valid_moveAux([L1|Ls], Player, ListOfMovesTmp, Xinitial, Yinitial, 13, Yfinal, L
         Yprox is Yfinal + 1,
         valid_moveAux([L1|Ls], Player, ListOfMovesTmp, Xinitial, Yinitial, 1, Yprox, ListOfMoves).
 
-valid_moveAux([L1|Ls], Player, ListOfMovesTmp, Xinitial, Yinitial, 1, 13, ListOfMovesTmp).
+valid_moveAux([L1|Ls], Player, ListOfMovesTmp, Xinitial, Yinitial, 1, 13, ListOfMovesTmp).%:- append([],ListOfMovesTmp,ListOfMoves).%:-        write(ListOfMoves),nl.
 
 %avalia todas as jogadas possiveis
 %5-Ganhar o jogo
@@ -432,45 +493,88 @@ value(PreviousBoard, Board, Player, Value):-
         Winner == Player,
         Value is 5.
 
-value(PreviousBoard, Board, Player, Value):-
-        opponent(Player, Opponent),
-        isQueenProtected(Player, Board),
-        once(countBoardPieces(Board, Opponent, Count)),
-        once(countBoardPieces(PreviousBoard, Opponent, PreviousCount)),
+value(PreviousBoard, Board, 1, Value):-
+        \+isQueenProtected(1, Board),
+        game_over(Board,Winner1),
+        game_over(PreviousBoard,Winner2),
+        Winner1 == 2,
+        Winner2 == 2,
+        Value is -1.
+
+value(PreviousBoard, Board, 2, Value):-
+        \+isQueenProtected(2, Board),
+        game_over(Board,Winner1),
+        game_over(PreviousBoard,Winner2),
+        Winner1 == 1,
+        Winner2 ==1,
+        Value is -1.
+
+value(PreviousBoard, Board, 1, Value):-
+        isQueenProtected(1, Board),
+        once(countBoardPieces(Board, 2, Count)),
+        once(countBoardPieces(PreviousBoard, 2, PreviousCount)),
         Count < PreviousCount,
         Value is 4.
 
-value(PreviousBoard, Board, Player, Value):-
-        opponent(Player, Opponent),
-        isQueenProtected(Player, Board),
-        once(countBoardPieces(PreviousBoard, Opponent, PreviousCount)),
-        once(countBoardPieces(Board, Opponent, Count)),
+value(PreviousBoard, Board, 2, Value):-
+        isQueenProtected(2, Board),
+        once(countBoardPieces(PreviousBoard, 1, PreviousCount)),
+        once(countBoardPieces(Board, 1, Count)),
+        Count < PreviousCount,
+        Value is 4.
+
+
+value(PreviousBoard, Board, 1, Value):-
+        isQueenProtected(1, Board),
+        once(countBoardPieces(PreviousBoard, 2, PreviousCount)),
+        once(countBoardPieces(Board, 2, Count)),
         Count == PreviousCount,
         Value is 3.
 
-value(PreviousBoard, Board, Player, Value):-
-        opponent(Player, Opponent),
-        once(countBoardPieces(Board, Opponent, Count)),
-        once(countBoardPieces(PreviousBoard, Opponent, PreviousCount)),
+value(PreviousBoard, Board, 2, Value):-
+        isQueenProtected(2, Board),
+        once(countBoardPieces(PreviousBoard, 1, PreviousCount)),
+        once(countBoardPieces(Board, 1, Count)),
+        Count == PreviousCount,
+        Value is 3.
+
+value(PreviousBoard, Board, 1, Value):-
+        once(countBoardPieces(Board, 2, Count)),
+        once(countBoardPieces(PreviousBoard, 2, PreviousCount)),
         Count < PreviousCount,
         Value is 2.
 
-value(PreviousBoard, Board, Player, Value):-
-        opponent(Player, Opponent),
-        once(countBoardPieces(PreviousBoard, Opponent, PreviousCount)),
-        once(countBoardPieces(Board, Opponent, Count)),
+value(PreviousBoard, Board, 2, Value):-
+        once(countBoardPieces(PreviousBoard, 1, PreviousCount)),
+        once(countBoardPieces(Board, 1, Count)),
+        Count < PreviousCount,
+        Value is 2.
+
+value(PreviousBoard, Board, 1, Value):-
+        once(countBoardPieces(PreviousBoard, 2, PreviousCount)),
+        once(countBoardPieces(Board, 2, Count)),
+        Count == PreviousCount,
+        Value is 1.
+
+value(PreviousBoard, Board, 2, Value):-
+        once(countBoardPieces(PreviousBoard, 1, PreviousCount)),
+        once(countBoardPieces(Board, 1, Count)),
         Count == PreviousCount,
         Value is 1.
 
 
+
 %cria lista com valores de uma lista de jogadas
 value_moves(Board, CurPlayer, [Move|Ms], [Value|Vs]):-
-        getCoordsFromMove(Move, Xinitial,Yinitial,Xfinal,Yfinal),
+        getCoordsFromMove(Move, Xinitial,Yinitial,Xfinal,Yfinal,0),
         move(CurPlayer, Board, Xinitial, Yinitial, Xfinal, Yfinal, NewBoard),
         value(Board, NewBoard, CurPlayer, Value),
         value_moves(Board, CurPlayer, Ms, Vs).
 
+
 value_moves(Board, CurPlayer, [], []).
+
+
 
 
 %conta as peças de um jogador no board
@@ -483,6 +587,10 @@ countBoardPieces([L1|Ls], Player, Count):-
 
 countBoardPieces([], Player, 0).
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 countBoardPiecesLine([L1|Ls], 1, Count):-
         L1 > 0,
         countBoardPiecesLine(Ls, 1, CountTmp),
@@ -498,8 +606,6 @@ countBoardPiecesLine([L1|Ls], Player, Count):-
 
 countBoardPiecesLine([], Player, 0).
 
-
-%verifica se a rainha de um player está protegida
 isQueenProtected(Player, Board):-
         getQueenPos(Player,Board,X,Y,Value),
         once(isQueenProtectedAux(Board, 1, 1, X, Y, Value)).
@@ -528,7 +634,7 @@ isQueenProtectedLineAux([L1|Ls], X, Y, Xqueen, Yqueen, ValueQueen):-
 isQueenProtectedLineAux([], X, Y, Xqueen, Yqueen, ValueQueen).
 
 
-%retorna o valor maximo de uma lista
+
 max(ListOfValues, MaxValue):-
         once(maxAux(ListOfValues, 0, MaxValue)).
 
@@ -542,34 +648,76 @@ maxAux([V1|Vs], MaxValueTmp, MaxValue):-
 maxAux([], MaxValueTmp, MaxValueTmp).
 
 
-%retorna as coordenadas de um movimento recebendo uma lista com 4 elementos
-getCoordsFromMove([Xinitial,Yinitial,Xfinal,Yfinal], Xinitial,Yinitial,Xfinal,Yfinal).
 
 
-%retorna um movimento com um value de uma lista de moves
-getMoveWithValue(ListOfMoves, ListOfValues, Value, Xinitial, Yinitial, Xfinal, Yfinal):-
-        once(getMoveWithValueAux(ListOfMoves, ListOfValues, Value, Xinitial, Yinitial, Xfinal, Yfinal, [])).
-
-getMoveWithValueAux([L1|Ls], [Value|Vs], Value, Xinitial, Yinitial, Xfinal, Yfinal, ListOfMovesTmp):-
-        append(ListOfMovesTmp, [L1], NewListOfMovesTmp),
-        getMoveWithValueAux(Ls, Vs, Value, Xinitial, Yinitial, Xfinal, Yfinal, NewListOfMovesTmp).
-
-getMoveWithValueAux([L1|Ls], [V1|Vs], Value, Xinitial, Yinitial, Xfinal, Yfinal, ListOfMovesTmp):-
-        getMoveWithValueAux(Ls, Vs, Value, Xinitial, Yinitial, Xfinal, Yfinal, ListOfMovesTmp).
-
-getMoveWithValueAux([], [], Value, Xinitial, Yinitial, Xfinal, Yfinal, ListOfMovesTmp):-
-        %write(ListOfMovesTmp),nl,
-        random_member(Move,ListOfMovesTmp),
-        getCoordsFromMove(Move, Xinitial,Yinitial,Xfinal,Yfinal).
 
 
-%verifica o final do jogo
+
+
+
+min(ListOfValues, MinValue):-
+        once(minAux(ListOfValues, -1, MinValue)).
+
+minAux([V1|Vs], MinValueTmp, MinValue):-
+        V1 == MinValueTmp,
+        MinValue is -1.
+
+minAux([V1|Vs], MinValueTmp, MinValue):-
+        maxAux(Vs, MinValueTmp, MinValue).
+
+minAux([], MinValueTmp, MinValue):-
+        nonvar(MinValue),
+        MinValue is 1.
+
+
+
+
+
+getCoordsFromMove([L1|Ls], Xinitial,Yinitial,Xfinal,Yfinal,Xvar):-
+        getCoordsFromMoveAux([L1|Ls],Xinitial,Yinitial,Xfinal,Yfinal,Xvar),
+        Xvartmp is Xvar +1,
+        getCoordsFromMove(Ls, Xinitial,Yinitial,Xfinal,Yfinal,Xvartmp).
+
+
+getCoordsFromMove([], Xinitial,Yinitial,Xfinal,Yfinal,Xvar).
+
+
+%Xinitial
+getCoordsFromMoveAux([L1|Ls], Xinitial,Yinitial,Xfinal,Yfinal,Xvar):-
+        Xvar == 0,
+        Xinitial is L1.
+
+%Yinitial
+getCoordsFromMoveAux([L1|Ls], Xinitial,Yinitial,Xfinal,Yfinal,Xvar):-
+        Xvar == 1,
+        Yinitial is L1.
+
+%Xfinal
+getCoordsFromMoveAux([L1|Ls], Xinitial,Yinitial,Xfinal,Yfinal,Xvar):-
+        Xvar == 2,
+        Xfinal is L1.
+
+%Yfinal
+getCoordsFromMoveAux([L1|Ls], Xinitial,Yinitial,Xfinal,Yfinal,Xvar):-
+        Xvar == 3,
+        Yfinal is L1.
+
+
+%verifica se existe um baby da equipa adversaria na posicao final
+%se sim come esse baby e nao deixa um baby na posicao inicial
+%se nao existir nenhuma peca na posicao final deixa um baby na posicao inicial ao deslocar se
+%eat(Xinitial,Yinitial,Xfinal,Yfinal).
+
+%deixa um baby na posição inicial da rainha após esta se movimentar
+%dropBaby(Board,X,Y,Player). %IMPORTANTE
+
+%acaba o jogo?
 %game_over Player 2
-game_over(Board, Winner):-
+game_over(Board, Winner):- %IMPORTANTE
         \+getQueenPos(2, Board, Xrainha, Yrainha, Value),
         Winner is 1.
 
-game_over(Board, Winner):-
+game_over(Board, Winner):- %IMPORTANTE
         valid_moves(Board, 2, ListOfMoves),
         length(ListOfMoves,Len),
         Len == 0,
@@ -577,13 +725,17 @@ game_over(Board, Winner):-
 
 
 %game_over Player 1
-game_over(Board, Winner):-
+game_over(Board, Winner):- %IMPORTANTE
         \+getQueenPos(1, Board, Xrainha, Yrainha, Value),
         Winner is 2.
 
 %game_over Player 1
-game_over(Board, Winner):-
+game_over(Board, Winner):- %IMPORTANTE
         valid_moves(Board, 1, ListOfMoves),
         length(ListOfMoves,Len),
         Len == 0,
         Winner is 2.
+
+
+
+
