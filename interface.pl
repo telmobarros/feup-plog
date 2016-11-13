@@ -95,17 +95,17 @@ readMove(Xinitial, Yinitial, Xfinal, Yfinal) :-
         write('Row->'), read(Yfinal),nl.
 
 
-display_msg_best_play(Player ,Board, NewBoard):-
+display_msg_best_move(Player ,Board, NewBoard):-
         once(valid_moves(Board, Player, ListOfMoves)),
         once(value_moves(Board, Player, ListOfMoves, ListOfValues)),
         value(Board, NewBoard, Player, Value),
         max(ListOfValues, MaxValue),
-        display_msg_best_playAux(Value, MaxValue, ListOfMoves, ListOfValues).
+        display_msg_best_moveAux(Value, MaxValue, ListOfMoves, ListOfValues).
 
-display_msg_best_playAux(Value, Value, ListOfMoves, ListOfValues):-
+display_msg_best_moveAux(Value, Value, ListOfMoves, ListOfValues):-
         write('The best play was choosen'), nl.
 
-display_msg_best_playAux(Value, MaxValue, ListOfMoves, ListOfValues):-
+display_msg_best_moveAux(Value, MaxValue, ListOfMoves, ListOfValues):-
         write('There was a better move (ex):'),nl,
         getMoveWithValue(ListOfMoves, ListOfValues, MaxValue, Xinitialcp, Yinitialcp, Xfinalcp, Yfinalcp),
         write('Xinitial: '), write(Xinitialcp),nl,
