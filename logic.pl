@@ -1,5 +1,3 @@
-
-
 board_initialized(Board):-
         Board=[[0,0,0,0,0,-20,0,0,0,0,0,0],            %estado intermédio
                [0,0,0,0,0,0,0,0,0,0,0,0],
@@ -375,36 +373,8 @@ getQueenLinePosAux(2, [L1|Ls], Xprox, Yprox, X, Y, Value):-
         X is Xprox,
         Y is Yprox.
 
-getQueenLinePosAux(Player, [], Xprox, Yprox, X, Y, Value).        %:- write(X),write('acabou a linha').
+getQueenLinePosAux(Player, [], Xprox, Yprox, X, Y, Value).
 
-/*getQueenPosAux(Player, [L1|Ls], Yprox, X, Y, Value):-
-                         X == _,
-                         write(X),nl,
-                         getQueenLinePosAux(Player,L1, 1, Yprox, X, Y, Value).
-
-                         getQueenPosAux(Player, [L1|Ls], 13, X, Y, Value).
-
-                         getQueenLinePosAux(Player, [L1|Ls], Xprox, Yprox, X, Y, Value):-
-                         L1 >= -1,
-                         L1 =< 1,
-                         Var is Xprox + 1,
-                         getQueenLinePosAux(Player, Ls, Var, Yprox, X, Y, Value).
-
-                         getQueenLinePosAux(1, [L1|Ls], Xprox, Yprox, X, Y, Value):-
-                         L1 >= 2,
-                         Value is L1,
-                         X is Xprox,
-                         Y is Yprox.
-
-                         getQueenLinePosAux(2, [L1|Ls], Xprox, Yprox, X, Y, Value):-
-                         L1 =< -2,
-                         Value is L1,
-                         X is Xprox,
-                         Y is Yprox.
-
-                         getQueenLinePosAux(Player, [L1|Ls], 13, Yprox, X, Y, Value):-
-                         Var is Yprox+1,
-                         getQueenPosAux(Player, [L1|Ls], Var, X, Y, Value).*/
 
 %verifica se a peca ao movimentar-se se se aproxima da rainha
 queen_aprox(Board, 1, Xfinal, Yfinal, Xinitial, Yinitial):-
@@ -479,7 +449,7 @@ valid_moveAux([L1|Ls], Player, ListOfMovesTmp, Xinitial, Yinitial, 13, Yfinal, L
         Yprox is Yfinal + 1,
         valid_moveAux([L1|Ls], Player, ListOfMovesTmp, Xinitial, Yinitial, 1, Yprox, ListOfMoves).
 
-valid_moveAux([L1|Ls], Player, ListOfMovesTmp, Xinitial, Yinitial, 1, 13, ListOfMovesTmp).%:- append([],ListOfMovesTmp,ListOfMoves).%:-        write(ListOfMoves),nl.
+valid_moveAux([L1|Ls], Player, ListOfMovesTmp, Xinitial, Yinitial, 1, 13, ListOfMovesTmp).
 
 %avalia todas as jogadas possiveis
 %5-Ganhar o jogo
@@ -491,7 +461,6 @@ valid_moveAux([L1|Ls], Player, ListOfMovesTmp, Xinitial, Yinitial, 1, 13, ListOf
 value(PreviousBoard, Board, Player, Value):-
         game_over(Board,Winner),
         Winner == Player,
-        write('game over'),nl,
         Value is 5.
 
 
@@ -552,7 +521,7 @@ value(PreviousBoard, Board, 2, Value):-
 
 %cria lista com valores de uma lista de jogadas
 value_moves(Board, CurPlayer, [Move|Ms], [Value|Vs]):-
-        getCoordsFromMove(Move, Xinitial,Yinitial,Xfinal,Yfinal,0),
+        getCoordsFromMove(Move, Xinitial,Yinitial,Xfinal,Yfinal),
         move(CurPlayer, Board, Xinitial, Yinitial, Xfinal, Yfinal, NewBoard),
         value(Board, NewBoard, CurPlayer, Value),
         value_moves(Board, CurPlayer, Ms, Vs).
@@ -634,51 +603,28 @@ maxAux([V1|Vs], MaxValueTmp, MaxValue):-
 maxAux([], MaxValueTmp, MaxValueTmp).
 
 
-getCoordsFromMove([L1|Ls], Xinitial,Yinitial,Xfinal,Yfinal,Xvar):-
-        getCoordsFromMoveAux([L1|Ls],Xinitial,Yinitial,Xfinal,Yfinal,Xvar),
-        Xvartmp is Xvar +1,
-        getCoordsFromMove(Ls, Xinitial,Yinitial,Xfinal,Yfinal,Xvartmp).
+getCoordsFromMove([Xinitial,Yinitial,Xfinal,Yfinal], Xinitial,Yinitial,Xfinal,Yfinal).
 
 
-getCoordsFromMove([], Xinitial,Yinitial,Xfinal,Yfinal,Xvar).
+
+getMoveWithValue([L1|Ls], [V1|Vs], Value, Xinitial, Yinitial, Xfinal, Yfinal):-
+        V1 == Value,
+        getCoordsFromMove(L1, Xinitial,Yinitial,Xfinal,Yfinal).
+
+getMoveWithValue([L1|Ls], [V1|Vs], Value, Xinitial, Yinitial, Xfinal, Yfinal):-
+        getMoveWithValue(Ls, Vs, Value, Xinitial, Yinitial, Xfinal, Yfinal).
+
+getMoveWithValue([], [], Value, Xinitial, Yinitial, Xfinal, Yfinal).
 
 
-%Xinitial
-getCoordsFromMoveAux([L1|Ls], Xinitial,Yinitial,Xfinal,Yfinal,Xvar):-
-        Xvar == 0,
-        Xinitial is L1.
-
-%Yinitial
-getCoordsFromMoveAux([L1|Ls], Xinitial,Yinitial,Xfinal,Yfinal,Xvar):-
-        Xvar == 1,
-        Yinitial is L1.
-
-%Xfinal
-getCoordsFromMoveAux([L1|Ls], Xinitial,Yinitial,Xfinal,Yfinal,Xvar):-
-        Xvar == 2,
-        Xfinal is L1.
-
-%Yfinal
-getCoordsFromMoveAux([L1|Ls], Xinitial,Yinitial,Xfinal,Yfinal,Xvar):-
-        Xvar == 3,
-        Yfinal is L1.
-
-
-%verifica se existe um baby da equipa adversaria na posicao final
-%se sim come esse baby e nao deixa um baby na posicao inicial
-%se nao existir nenhuma peca na posicao final deixa um baby na posicao inicial ao deslocar se
-%eat(Xinitial,Yinitial,Xfinal,Yfinal).
-
-%deixa um baby na posição inicial da rainha após esta se movimentar
-%dropBaby(Board,X,Y,Player). %IMPORTANTE
 
 %acaba o jogo?
 %game_over Player 2
-game_over(Board, Winner):- %IMPORTANTE
+game_over(Board, Winner):-
         \+getQueenPos(2, Board, Xrainha, Yrainha, Value),
         Winner is 1.
 
-game_over(Board, Winner):- %IMPORTANTE
+game_over(Board, Winner):-
         valid_moves(Board, 2, ListOfMoves),
         length(ListOfMoves,Len),
         Len == 0,
@@ -686,12 +632,12 @@ game_over(Board, Winner):- %IMPORTANTE
 
 
 %game_over Player 1
-game_over(Board, Winner):- %IMPORTANTE
+game_over(Board, Winner):-
         \+getQueenPos(1, Board, Xrainha, Yrainha, Value),
         Winner is 2.
 
 %game_over Player 1
-game_over(Board, Winner):- %IMPORTANTE
+game_over(Board, Winner):-
         valid_moves(Board, 1, ListOfMoves),
         length(ListOfMoves,Len),
         Len == 0,
