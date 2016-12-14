@@ -40,6 +40,8 @@ ano_escolar(NDisciplinas, NTurmas, NSemanas, NTPCDia, NTPCDisc, ListaTestes1, Li
 	testesNaoConsecutivos(ListaTestes1, ListaTestes1),
 	testesNaoConsecutivos(ListaTestes2, ListaTestes2),
 	
+	otimizacaoTestesMesmaDisciplina(ListaTestes1, ListaTestes1, Options),
+	
 	labeling([],ListaTestes1),
 	labeling([],ListaTestes2),
 	sum(ListaTpcs,#=,Total),
@@ -170,6 +172,31 @@ testesNaoConsecutivos([Turma, Disciplina, Semana1 , DiaSemana1 | Ls],[Turma, Dis
 testesNaoConsecutivos([Turma1, Disciplina1, Semana1 , DiaSemana1 | Ls1],[Turma2, _, _, _| Ls2]):-
         Turma1 =\= Turma2,
         testesNaoConsecutivos([Turma1, Disciplina1, Semana1 , DiaSemana1 | Ls1], Ls2).
+
+%%%Otimizacao testes mesma disciplina%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%caso base
+otimizacaoTestesMesmaDisciplina([],[],[]).
+
+%final da segunda lista
+otimizacaoTestesMesmaDisciplina([_, _, _, _| Ls1],[], [Option|Os]):-
+        otimizacaoTestesMesmaDisciplina(Ls1, Ls1, [Option|Os]).
+
+%disciplinas diferentes
+otimizacaoTestesMesmaDisciplina([Turma1, Disciplina1, Semana1 , DiaSemana1 | Ls1],[Turma2, Disciplina2, Semana2 , DiaSemana2 | Ls2], [Option|Os]):-
+        Disciplina1 =\= Disciplina2,
+        otimizacaoTestesMesmaDisciplina([Turma1, Disciplina1, Semana1 , DiaSemana1 | Ls1], Ls2, [Option|Os]).
+
+%mesma turma, mesma disciplina
+otimizacaoTestesMesmaDisciplina([Turma, Disciplina, Semana1 , DiaSemana1 | Ls],[Turma, Disciplina, _, _| Ls], [Option|Os]):-
+        otimizacaoTestesMesmaDisciplina([Turma, Disciplina, Semana1 , DiaSemana1 | Ls], Ls, [Option|Os]).
+
+%turmas diferentes, mesma disciplina
+otimizacaoTestesMesmaDisciplina([Turma1, Disciplina, Semana1 , DiaSemana1 | Ls1],[Turma2, Disciplina, Semana2, DiaSemana2| Ls2], [Option|Os]):-
+        Turma1 =\= Turma2,
+write("boas"),nl,
+		//Option = min(abs(Semana1*5+DiaSemana1 - Semana2*5+DiaSemana2)),
+        otimizacaoTestesMesmaDisciplina([Turma1, Disciplina, Semana1 , DiaSemana1 | Ls1], Ls2, Os).
 
 
 %%%Restrição dois testes por semana%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
