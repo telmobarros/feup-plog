@@ -42,10 +42,11 @@ ano_escolar(NDisciplinas, NTurmas, NSemanas, NTPCDia, NTPCDisc, ListaTestes1, Li
 	
 	labeling([],ListaTestes1),
 	labeling([],ListaTestes2),
-	labeling([max],ListaTpcs),
-        writeHorarios(1, NTurmas),
-        writeTestes(ListaTestes1, ListaTestes2),
-		write(Lista).
+	sum(ListaTpcs,#=,Total),
+	labeling([maximize(Total)],Lista),
+	writeHorarios(1, NTurmas),
+	writeTestes(ListaTestes1, ListaTestes2),
+	write(Lista).
 
 
 %%%criador da lista inicial de testes para cada fase de testes%%%%%%%%%%%%%%%%%%%%%%
