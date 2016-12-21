@@ -10,7 +10,7 @@ horario(3, [[1,3,4,2],[2,4,8,9,1],[1,2,8],[8,4,5],[2,5,7,6,9]]).
 horario(4, [[2,4,8,9,1],[1,3,4,2],[8,4,5],[2,5,7,6,9],[1,2,8]]).
 
 
-ano_escolar(NDisciplinas, NTurmas, NSemanas, NTPCDia, NTPCDisc, ListaTestes, ListaTPCs):-
+ano_escolar(NDisciplinas, NTurmas, NSemanas, NTPCDia, NTPCDisc, DiaLivreTPC, ListaTestes, ListaTPCs):-
 	criar_lista_testes(NDisciplinas, NTurmas, ListaTestes1),
 	criar_lista_testes(NDisciplinas, NTurmas, ListaTestes2),
 	criar_lista_tpcs(NDisciplinas,ListaTPCs),
@@ -19,7 +19,8 @@ ano_escolar(NDisciplinas, NTurmas, NSemanas, NTPCDia, NTPCDisc, ListaTestes, Lis
 	domain(ListaTpcs,0,1),
 	horario(1,Horario1),
 	tpcEmDiaComDisciplina(Horario1,ListaTPCs),
-	setSomaTpcDia(NTPCDia,ListaTPCs),
+	setSomaTpcDia(NTPCDia,ListaTPCs, DiaLivreTPC),
+        setSomaTpcDisciplina(NTPCDisc, ListaTPCs, NDisciplinas),
 
 	%calcula semanas em que pode haver teste e define os dominios das duas fases de testes
 	NSemanas >= NDisciplinas,
@@ -239,13 +240,21 @@ impoeDoisTestesCadaSemana(Semanas, MinSemana, MaxSemana):-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%Soma do numero de tpcs por dia %%%%%%%%%%%%%%%%%%%%%%%%
 
 
-setSomaTpcDia(NTPCDia,Lista):-
+setSomaTpcDia(NTPCDia,Lista, DiaLivreTPC):-
         setSomaTpcDiaAux(Lista,L1,L2,L3,L4,L5),
         sum(L1,#=<,NTPCDia),
         sum(L2,#=<,NTPCDia),
         sum(L3,#=<,NTPCDia),
         sum(L4,#=<,NTPCDia),
         sum(L5,#=<,NTPCDia).
+        setDiaLivreTPC(DiaLivreTPC,L1,L2,L3,L4,L5).
+
+
+setDiaLivreTPC(1,L1,_,_,_,_):-sum(L1,#=,0).
+setDiaLivreTPC(2,_,L2,_,_,_):-sum(L2,#=,0).
+setDiaLivreTPC(3,_,_,L3,_,_):-sum(L3#=,0).
+setDiaLivreTPC(4,_,_,_,L4,_):-sum(L4,#=,0).
+setDiaLivreTPC(5,_,_,_,_,L5,):-sum(L5,#=,0).
 %sum(L1,#=,0).% #\/ sum(L2,#=,0).% #\/ sum(L3,#=,0) #\/ sum(L4,#=,0) #\/ sum(L5,#=,0).
 
 setSomaTpcDiaAux([1,_,Var|Ls],[Var|Ts],L2,L3,L4,L5):-setSomaTpcDiaAux(Ls,Ts,L2,L3,L4,L5).
@@ -255,4 +264,20 @@ setSomaTpcDiaAux([4,_,Var|Ls],[],[],[],[Var|Ts],L5):-setSomaTpcDiaAux(Ls,[],[],[
 setSomaTpcDiaAux([5,_,Var|Ls],[],[],[],[],[Var|Ts]):-setSomaTpcDiaAux(Ls,[],[],[],[],Ts).
 setSomaTpcDiaAux([],[],[],[],[],[]).
 
+setSomaTpcDisciplina(_, _, 0).
 
+setSomaTpcDisciplina(NTPCDisc, ListaTPCs, NDisciplinas):-
+        NDisciplinas > 0,
+        getTPCDisciplina(ListaTPCs, NDisciplinas, ListaTPCDisciplina).
+        sum(ListaTPCDisciplina, #=<, NTPCDisc),
+        NextNDisciplinas is NDisciplinas - 1,
+        setSomaTpcDisciplina(NTPCDisc, ListaTPCs, NextNDisciplinas).
+
+getTPCDisciplina([], _, []').
+
+getTPCDisciplina([_, NDisciplina, Var|Ls], NDisciplina, [Var|Ts])
+        getTPCDisciplina(Ls, NDisciplina, Ts).
+
+getTPCDisciplina([_, NDisciplina1, _|Ls], NDisciplina2, ListaTPCDisciplina):-
+        Ndisciplina1 =\= N Disciplina2,
+        getTPCDisciplina(Ls, NDisciplina2, ListaTPCDisciplina).
