@@ -10,7 +10,7 @@ horario(3, [[1,3,4,2],[2,4,8,9,1],[1,2,8],[8,4,5],[2,5,7,6,9]]).
 horario(4, [[2,4,8,9,1],[1,3,4,2],[8,4,5],[2,5,7,6,9],[1,2,8]]).
 
 
-ano_escolar(NDisciplinas, NTurmas, NSemanas, NTPCDia, NTPCDisc, DiaLivreTPC, ListaTestes, ListaTPCs):-
+ano_escolar(NDisciplinas, NTurmas, NSemanas, NTPCDia, NTPCDisc, DiaLivreTPC,NrTestesSemana, DistanciaEntreTestes,ListaTestes, ListaTPCs):-
 	criar_lista_testes(NDisciplinas, NTurmas, ListaTestes1),
 	criar_lista_testes(NDisciplinas, NTurmas, ListaTestes2),
         writeHorarios(1, NTurmas),
@@ -28,12 +28,12 @@ ano_escolar(NDisciplinas, NTurmas, NSemanas, NTPCDia, NTPCDisc, DiaLivreTPC, Lis
         testesEmDiasComDisciplina(ListaTestes2),
 
 	%impoe dois testes por semana
-	doisTestesSemana(ListaTestes1, NDisciplinas, MinSemana1, MaxSemana1),
-	doisTestesSemana(ListaTestes2, NDisciplinas, MinSemana2, MaxSemana2),
+	doisTestesSemana(ListaTestes1, NDisciplinas, MinSemana1, MaxSemana1,NrTestesSemana),
+	doisTestesSemana(ListaTestes2, NDisciplinas, MinSemana2, MaxSemana2,NrTestesSemana),
 
 	%impoe testes na mesma semana com distancia de 2 dias
-	testesNaoConsecutivos(ListaTestes1, ListaTestes1),
-	testesNaoConsecutivos(ListaTestes2, ListaTestes2),
+	testesNaoConsecutivos(ListaTestes1, ListaTestes1,DistanciaEntreTestes),
+	testesNaoConsecutivos(ListaTestes2, ListaTestes2,DistanciaEntreTestes),
 
         %%otimizacao dos testes proximos
         getDistanciaTestesMesmaDisciplina(ListaTestes1, ListaTestes1, Distancias1),
@@ -43,7 +43,6 @@ ano_escolar(NDisciplinas, NTurmas, NSemanas, NTPCDia, NTPCDisc, DiaLivreTPC, Lis
 
         
         calendarizarTPCs(1,NTurmas, NDisciplinas, NTPCDia, NTPCDisc, DiaLivreTPC, ListaTPCs),
-        write('oi'),nl,
         
 	labeling([minimize(TotalDistancia1),time_out(30000,_),all],ListaTestes1),%time_out(30000,_),
         labeling([minimize(TotalDistancia2),time_out(30000,_),all],ListaTestes2),
@@ -159,26 +158,26 @@ tpcEmDiaComDisciplinaAux([L1|Ls],Ndia,Ndisc,Var,Ndia):-
 %%%Restricao testes nao consecutivos%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %caso base
-testesNaoConsecutivos([],[]).
+testesNaoConsecutivos([],[],_).
 
 %final da segunda lista
-testesNaoConsecutivos([_, _, _, _| Ls1],[]):-
-        testesNaoConsecutivos(Ls1,Ls1).
+testesNaoConsecutivos([_, _, _, _| Ls1],[],DistanciaEntreTestes):-
+        testesNaoConsecutivos(Ls1,Ls1,DistanciaEntreTestes).
 
 %mesma turma, mesma semana (necessidade de restricao)
-testesNaoConsecutivos([Turma, Disciplina1, Semana1 , DiaSemana1 | Ls1],[Turma, Disciplina2, Semana2 , DiaSemana2 | Ls2]):-
+testesNaoConsecutivos([Turma, Disciplina1, Semana1 , DiaSemana1 | Ls1],[Turma, Disciplina2, Semana2 , DiaSemana2 | Ls2],DistanciaEntreTestes):-
         Disciplina1 =\= Disciplina2,
-        ((abs(DiaSemana1 - DiaSemana2) #> 1) #/\ (Semana1 #= Semana2)) #\ (Semana1 #\= Semana2),
-        testesNaoConsecutivos([Turma, Disciplina1, Semana1 , DiaSemana1 | Ls1], Ls2).
+        ((abs(DiaSemana1 - DiaSemana2) #> DistanciaEntreTestes) #/\ (Semana1 #= Semana2)) #\ (Semana1 #\= Semana2),
+        testesNaoConsecutivos([Turma, Disciplina1, Semana1 , DiaSemana1 | Ls1], Ls2,DistanciaEntreTestes).
 
 %mesma turma, mesma disciplina
-testesNaoConsecutivos([Turma, Disciplina, Semana1 , DiaSemana1 | Ls],[Turma, Disciplina, _, _| Ls]):-
-        testesNaoConsecutivos([Turma, Disciplina, Semana1 , DiaSemana1 | Ls], Ls).
+testesNaoConsecutivos([Turma, Disciplina, Semana1 , DiaSemana1 | Ls],[Turma, Disciplina, _, _| Ls],DistanciaEntreTestes):-
+        testesNaoConsecutivos([Turma, Disciplina, Semana1 , DiaSemana1 | Ls], Ls,DistanciaEntreTestes).
 
 %turmas diferentes
-testesNaoConsecutivos([Turma1, Disciplina1, Semana1 , DiaSemana1 | Ls1],[Turma2, _, _, _| Ls2]):-
+testesNaoConsecutivos([Turma1, Disciplina1, Semana1 , DiaSemana1 | Ls1],[Turma2, _, _, _| Ls2],DistanciaEntreTestes):-
         Turma1 =\= Turma2,
-        testesNaoConsecutivos([Turma1, Disciplina1, Semana1 , DiaSemana1 | Ls1], Ls2).
+        testesNaoConsecutivos([Turma1, Disciplina1, Semana1 , DiaSemana1 | Ls1], Ls2,DistanciaEntreTestes).
 
 %%%Otimizacao testes mesma disciplina%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -208,28 +207,28 @@ getDistanciaTestesMesmaDisciplina([Turma1, Disciplina, Semana1 , DiaSemana1 | Ls
 
 %%%Restrição dois testes por semana%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-%caso base
-doisTestesSemana([], _, _, _).
+%caso base ano_escolar(9,3,20,2,2,2,2,1,List,Lista).
+doisTestesSemana([], _, _,_,_).
 
 %turma feita
-doisTestesSemana(Lista, NDisciplinas, MinSemana, MaxSemana):-
+doisTestesSemana(Lista, NDisciplinas, MinSemana, MaxSemana,NrTestesSemana):-
 	getSemanas(Lista, NDisciplinas, Semanas, RestoLista),
-	impoeDoisTestesCadaSemana(Semanas, MinSemana, MaxSemana),
-	doisTestesSemana(RestoLista, NDisciplinas, MinSemana, MaxSemana).
+	impoeDoisTestesCadaSemana(Semanas, MinSemana, MaxSemana,NrTestesSemana),
+	doisTestesSemana(RestoLista, NDisciplinas, MinSemana, MaxSemana,NrTestesSemana).
 
 getSemanas(Ls, 0, [], Ls).
 getSemanas([_, _, Semana, _| Ls], Counter, [Semana|Ss], _):-
 	NextCounter is Counter - 1,
 	getSemanas(Ls, NextCounter, Ss, _).
 
-impoeDoisTestesCadaSemana(_, MinSemana, MaxSemana):-
+impoeDoisTestesCadaSemana(_, MinSemana, MaxSemana,_):-
 	MinSemana > MaxSemana.
 
-impoeDoisTestesCadaSemana(Semanas, MinSemana, MaxSemana):-
+impoeDoisTestesCadaSemana(Semanas, MinSemana, MaxSemana,NrTestesSemana):-
 	MinSemana =< MaxSemana,
-	count(MinSemana,Semanas,#=<,2),
+	count(MinSemana,Semanas,#=<,NrTestesSemana),
 	NextMinSemana is MinSemana + 1,
-	impoeDoisTestesCadaSemana(Semanas, NextMinSemana, MaxSemana).
+	impoeDoisTestesCadaSemana(Semanas, NextMinSemana, MaxSemana,NrTestesSemana).
 
 
 %%%%%%%%%TPCs para todas as turmas%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
