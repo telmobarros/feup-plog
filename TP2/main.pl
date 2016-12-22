@@ -252,7 +252,7 @@ calendarizarTPCs(TurmaCounter,NTurmas, NDisciplinas,NTPCDia, NTPCDisc, DiaLivreT
         labeling([maximize(Total)],ListaTPCs),
         %labeling([down],ListaTPCs),
         nl, nl, write('TPCs - Turma '), write(TurmaCounter), nl,
-        writeTPCs(ListaTPCs, 0, NDisciplinas),
+        writeTPCs(ListaTPCs, 0, NDisciplinas),nl,nl,
         NextTurmaCounter is TurmaCounter + 1,
         calendarizarTPCs(NextTurmaCounter,NTurmas, NDisciplinas,NTPCDia, NTPCDisc, DiaLivreTPC, Ls).
 

@@ -43,7 +43,7 @@ writeTPCs([Dia|Ls], 0, NDisciplinas):-
         nl, write(DiaString), nl,
         writeTPCs([Dia|Ls], NDisciplinas, NDisciplinas).
 
-writeTPCs([_, Disciplina, 0|Ls], DisciplinasCounter, NDisciplinas):-
+writeTPCs([_, _, 0|Ls], DisciplinasCounter, NDisciplinas):-
         NextDisciplina is DisciplinasCounter - 1,
         writeTPCs(Ls, NextDisciplina, NDisciplinas).
 
