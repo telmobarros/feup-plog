@@ -36,8 +36,22 @@ writeTestesAux([Turma, Disciplina, Semana , DiaSemana | Ls]):-
         write('Turma '), write(Turma), write(' -> '), write(DisciplinaString), write(': Semana '), write(Semana), write(', '), write(DiaString),nl,
         writeTestesAux(Ls).
 
+%writeTPCs(ListaTPCs, DisciplinasCounter,NDisciplinas).
+writeTPCs([], _, _).
+writeTPCs([Dia|Ls], 0, NDisciplinas):-
+        translateDiaSemana(Dia, DiaString),
+        nl, write(DiaString), nl,
+        writeTPCs([Dia|Ls], NDisciplinas, NDisciplinas).
 
+writeTPCs([_, Disciplina, 0|Ls], DisciplinasCounter, NDisciplinas):-
+        NextDisciplina is DisciplinasCounter - 1,
+        writeTPCs(Ls, NextDisciplina, NDisciplinas).
 
+writeTPCs([_, Disciplina, 1|Ls], DisciplinasCounter, NDisciplinas):-
+        translateDisciplina(Disciplina, DisciplinaString),
+        write(DisciplinaString), nl,
+        NextDisciplina is DisciplinasCounter - 1,
+        writeTPCs(Ls, NextDisciplina, NDisciplinas).
         
         
 translateDiaSemana(1, 'Segunda-Feira').

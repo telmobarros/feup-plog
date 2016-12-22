@@ -13,14 +13,7 @@ horario(4, [[2,4,8,9,1],[1,3,4,2],[8,4,5],[2,5,7,6,9],[1,2,8]]).
 ano_escolar(NDisciplinas, NTurmas, NSemanas, NTPCDia, NTPCDisc, DiaLivreTPC, ListaTestes, ListaTPCs):-
 	criar_lista_testes(NDisciplinas, NTurmas, ListaTestes1),
 	criar_lista_testes(NDisciplinas, NTurmas, ListaTestes2),
-	criar_lista_tpcs(NDisciplinas,ListaTPCs),
         writeHorarios(1, NTurmas),
-	getTPCs(ListaTPCs,ListaTpcs),
-	domain(ListaTpcs,0,1),
-	horario(1,Horario1),
-	tpcEmDiaComDisciplina(Horario1,ListaTPCs),
-	setSomaTpcDia(NTPCDia,ListaTPCs, DiaLivreTPC),
-        setSomaTpcDisciplina(NTPCDisc, ListaTPCs, NDisciplinas),
 
 	%calcula semanas em que pode haver teste e define os dominios das duas fases de testes
 	NSemanas >= NDisciplinas,
@@ -48,19 +41,22 @@ ano_escolar(NDisciplinas, NTurmas, NSemanas, NTPCDia, NTPCDisc, DiaLivreTPC, Lis
         getDistanciaTestesMesmaDisciplina(ListaTestes2, ListaTestes2, Distancias2),
         sum(Distancias2,#=,TotalDistancia2),
 
-	labeling([minimize(TotalDistancia1),time_out(30000,_),all],ListaTestes1),%time_out(30000,_)
-	labeling([minimize(TotalDistancia2),time_out(30000,_),all],ListaTestes2),
+        
+        calendarizarTPCs(1,NTurmas, NDisciplinas, NTPCDia, NTPCDisc, DiaLivreTPC, ListaTPCs),
+        
+        
+	labeling([minimize(TotalDistancia1),time_out(30000,_),best],ListaTestes1),%time_out(30000,_)
+	labeling([minimize(TotalDistancia2),time_out(30000,_),best],ListaTestes2),
 	append(ListaTestes1, ListaTestes2, ListaTestes),
 
-        %%labeling tpc
-        sum(ListaTpcs,#=,Total),
-	labeling([maximize(Total)],ListaTPCs),
 
         %writes
 	writeTestes(ListaTestes1, ListaTestes2),
-        write(TotalDistancia1),nl,write(Distancias1),nl,
-        write(TotalDistancia2),nl,write(Distancias2),nl,
-	write(ListaTPCs).
+        write('A distância da primeira fase de testes é '), write(TotalDistancia1),nl,
+        write('A distância da segunda fase de testes é '), write(TotalDistancia2),nl.
+        %write(TotalDistancia1),nl,write(Distancias1),nl,
+        %write(TotalDistancia2),nl,write(Distancias2),nl,
+	%write(ListaTPCs).
 
 
 %%%criador da lista inicial de testes para cada fase de testes%%%%%%%%%%%%%%%%%%%%%%
@@ -235,6 +231,30 @@ impoeDoisTestesCadaSemana(Semanas, MinSemana, MaxSemana):-
 	count(MinSemana,Semanas,#=<,2),
 	NextMinSemana is MinSemana + 1,
 	impoeDoisTestesCadaSemana(Semanas, NextMinSemana, MaxSemana).
+
+
+%%%%%%%%%TPCs para todas as turmas%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+  
+calendarizarTPCs(TurmaCounter,NTurmas,_,_,_,_,[]):-
+        TurmaCounter > NTurmas.
+        
+calendarizarTPCs(TurmaCounter,NTurmas, NDisciplinas,NTPCDia, NTPCDisc, DiaLivreTPC,[ListaTPCs|Ls]):-
+        TurmaCounter =< NTurmas,
+        criar_lista_tpcs(NDisciplinas,ListaTPCs),
+        getTPCs(ListaTPCs,ListaTpcs),
+        domain(ListaTpcs,0,1),
+        horario(1,Horario),
+        tpcEmDiaComDisciplina(Horario,ListaTPCs),
+        
+        setSomaTpcDia(NTPCDia,ListaTPCs, DiaLivreTPC),
+        setSomaTpcDisciplina(NTPCDisc, ListaTPCs, NDisciplinas),
+        %%labeling tpc
+        labeling([down],ListaTPCs),
+        nl, nl, write('TPCs - Turma '), write(TurmaCounter), nl,
+        writeTPCs(ListaTPCs, 0, NDisciplinas),
+        NextTurmaCounter is TurmaCounter + 1,
+        calendarizarTPCs(NextTurmaCounter,NTurmas, NDisciplinas,NTPCDia, NTPCDisc, DiaLivreTPC, Ls).
+
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%Soma do numero de tpcs por dia %%%%%%%%%%%%%%%%%%%%%%%%
