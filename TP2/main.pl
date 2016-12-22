@@ -43,12 +43,11 @@ ano_escolar(NDisciplinas, NTurmas, NSemanas, NTPCDia, NTPCDisc, DiaLivreTPC, Lis
 
         
         calendarizarTPCs(1,NTurmas, NDisciplinas, NTPCDia, NTPCDisc, DiaLivreTPC, ListaTPCs),
+        write('oi'),nl,
         
-        
-	labeling([minimize(TotalDistancia1),time_out(30000,_),best],ListaTestes1),%time_out(30000,_)
-	labeling([minimize(TotalDistancia2),time_out(30000,_),best],ListaTestes2),
-	append(ListaTestes1, ListaTestes2, ListaTestes),
-
+	labeling([minimize(TotalDistancia1),time_out(30000,_),all],ListaTestes1),%time_out(30000,_),
+        labeling([minimize(TotalDistancia2),time_out(30000,_),all],ListaTestes2),
+        append(ListaTestes1, ListaTestes2, ListaTestes),
 
         %writes
 	writeTestes(ListaTestes1, ListaTestes2),
@@ -241,15 +240,18 @@ calendarizarTPCs(TurmaCounter,NTurmas,_,_,_,_,[]):-
 calendarizarTPCs(TurmaCounter,NTurmas, NDisciplinas,NTPCDia, NTPCDisc, DiaLivreTPC,[ListaTPCs|Ls]):-
         TurmaCounter =< NTurmas,
         criar_lista_tpcs(NDisciplinas,ListaTPCs),
-        getTPCs(ListaTPCs,ListaTpcs),
-        domain(ListaTpcs,0,1),
-        horario(1,Horario),
+       
+        horario(TurmaCounter,Horario),
         tpcEmDiaComDisciplina(Horario,ListaTPCs),
         
         setSomaTpcDia(NTPCDia,ListaTPCs, DiaLivreTPC),
         setSomaTpcDisciplina(NTPCDisc, ListaTPCs, NDisciplinas),
+         getTPCs(ListaTPCs,ListaTpcs),
+        domain(ListaTpcs,0,1),
         %%labeling tpc
-        labeling([down],ListaTPCs),
+        sum(ListaTpcs,#=,Total),
+        labeling([maximize(Total)],ListaTPCs),
+        %labeling([down],ListaTPCs),
         nl, nl, write('TPCs - Turma '), write(TurmaCounter), nl,
         writeTPCs(ListaTPCs, 0, NDisciplinas),
         NextTurmaCounter is TurmaCounter + 1,
